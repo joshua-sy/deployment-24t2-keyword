@@ -1,10 +1,46 @@
+'use client';
+
 import Image from "next/image";
-import React from 'react';
-import Redbutton from '@/components/keyword/redButton/RedButton';
+import React, { useState, useEffect } from 'react';
+import RedButton from '@/components/keyword/redButton/RedButton';
 import GreyButton from '@/components/keyword/greyButton/GreyButton';
+import { useRouter } from "next/navigation";
+import { io, Socket } from 'socket.io-client';
+import { DefaultEventsMap } from '@socket.io/component-emitter';
+import { v4 as uuidv4 } from 'uuid';
 
 
 export default function Home() {
+  const router = useRouter();
+  const [socket, setSocket] = useState<Socket<DefaultEventsMap, DefaultEventsMap> | undefined>(undefined);
+
+
+  const goToGameRoom = () => {    
+    // get username from modal
+    const username = "kj";
+    localStorage.setItem('username', username);
+
+    const userId = uuidv4(); // Generate a unique user ID
+    localStorage.setItem('userId', userId);
+
+    socket?.emit('create-room', username, userId, (newCode: any) => {
+      router.push(`/keyword/gameroom?roomCode=${newCode.roomCode}`);
+    });
+  };
+
+  useEffect(() => {
+    const newSocket: Socket<DefaultEventsMap, DefaultEventsMap> = io('http://localhost:3001');
+    setSocket(newSocket);
+
+    newSocket.on('connect', () => {
+      console.log(`You connected with socket id: ${newSocket.id}`);
+    });
+
+    return () => {
+      newSocket.close();
+    };
+  }, []);
+
   return (
     <>
       <div className="backgroundDiv h-screen bg-cover bg-center" style={{ backgroundImage: 'url(/robotBackground.png)' }}>
@@ -19,8 +55,8 @@ export default function Home() {
           </div>
           
           <div>
-            <Redbutton label={"HOST ROOM"}/>
-            <Redbutton label={"JOIN ROOM"}/>
+            <RedButton onClick={goToGameRoom} label={"HOST ROOM"}/>
+            <RedButton label={"JOIN ROOM"}/>
           </div>
           <div>
             <GreyButton label="HOW TO PLAY"/>
