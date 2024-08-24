@@ -8,14 +8,18 @@ import { useRouter } from "next/navigation";
 import { io, Socket } from 'socket.io-client';
 import { DefaultEventsMap } from '@socket.io/component-emitter';
 import { v4 as uuidv4 } from 'uuid';
-
+import FormModal from "@/components/keyword/FormModal/FormModal";
+import useCheckRoom from "../hooks/checkRoom";
 
 export default function Home() {
   const router = useRouter();
   const [socket, setSocket] = useState<Socket<DefaultEventsMap, DefaultEventsMap> | undefined>(undefined);
+  const [roomCodeToCheck, setRoomCodeToCheck] = useState<string | null>(null);
+  const [name, setName] = useState<string | null>(null);
+  // Trigger room existence check only if roomCodeToCheck is set
+  const roomExists = useCheckRoom(roomCodeToCheck ?? '');
 
-
-  const goToGameRoom = () => {    
+  const hostGame = () => {    
     // get username from modal
     const username = "kj";
     localStorage.setItem('username', username);
@@ -23,13 +27,32 @@ export default function Home() {
     const userId = uuidv4(); // Generate a unique user ID
     localStorage.setItem('userId', userId);
 
+    console.log("ROOM");
+
     socket?.emit('create-room', username, userId, (newCode: any) => {
       router.push(`/keyword/gameroom?roomCode=${newCode.roomCode}`);
     });
   };
 
+  const handleJoin = (roomCode: string, name: string) => {
+    setRoomCodeToCheck(roomCode);
+    setName(name);
+    localStorage.setItem('username', name);
+  }
+
   useEffect(() => {
-    const newSocket: Socket<DefaultEventsMap, DefaultEventsMap> = io('http://localhost:3001');
+    console.log("roomExists: ", roomExists);
+    console.log("roomCodeToCheck: ", roomCodeToCheck);
+    console.log("name: ", name);
+    if (roomCodeToCheck && name) {
+      router.push(`/keyword/gameroom?roomCode=${roomCodeToCheck}`);
+    } else if (roomCodeToCheck) {
+      console.log("Room does not exist.");
+    }
+  }, [roomExists, roomCodeToCheck, name, router]);
+
+  useEffect(() => {
+    const newSocket: Socket<DefaultEventsMap, DefaultEventsMap> = io('http://localhost:4000');
     setSocket(newSocket);
 
     newSocket.on('connect', () => {
@@ -55,15 +78,13 @@ export default function Home() {
           </div>
           
           <div>
-            <RedButton onClick={goToGameRoom} label={"HOST ROOM"}/>
-            <RedButton label={"JOIN ROOM"}/>
+            <RedButton onClick={hostGame} label={"HOST ROOM"}/>
+            <FormModal onSubmit={handleJoin} />
           </div>
           <div>
             <GreyButton label="HOW TO PLAY"/>
           </div>
-        </div>
-       
-        
+        </div>        
       </div>
     </>
   );
