@@ -91,6 +91,8 @@ export default function Home() {
         {/* Width is fixed to 500 pixels for now */}
         <div className={`contentContainer text-center w-[500px] mx-auto transition-all duration-500 ease-in-out 
           ${showRules ? 'opacity-0 translate-y-10' : 'opacity-100 translate-y-0'}`}>
+
+          {/* The original page will be hidden once the 'HOW TO PLAY' button is clicked */}
           {!showRules && (
             <div>
               <div className="titleContainer py-10">
@@ -111,6 +113,7 @@ export default function Home() {
           )}
         </div>
 
+        {/* The game rules are shown once the 'HOW TO PLAY' button is clicked */}
         {showRules && (
           <div className="absolute inset-0 backdrop-blur-sm">
             <div className="rulesContainer fixed bottom-0 left-0 w-full h-[65%] bg-[#0C2820] z-10 border-[10px] border-black
