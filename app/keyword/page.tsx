@@ -1,8 +1,6 @@
 'use client';
 
-import Image from "next/image";
 import React, { useState, useEffect } from 'react';
-import RedButton from '@/components/keyword/redButton/RedButton';
 import GreyButton from '@/components/keyword/greyButton/GreyButton';
 import { useRouter } from "next/navigation";
 import { io, Socket } from 'socket.io-client';

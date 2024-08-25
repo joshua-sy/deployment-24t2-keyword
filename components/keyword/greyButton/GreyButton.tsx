@@ -5,7 +5,7 @@ interface greyButtonProps {
   onClick?: () => void;
 }
 
-const RedButton: React.FC<greyButtonProps> = ({
+const GreyButton: React.FC<greyButtonProps> = ({
   label,
   onClick,
 }) => {
@@ -23,4 +23,4 @@ const RedButton: React.FC<greyButtonProps> = ({
   )
 
 };
-export default RedButton;
+export default GreyButton;

@@ -1,3 +1,5 @@
+const { read } = require('fs');
+
 let ioInstance;
 let rooms = {};
 
@@ -23,7 +25,7 @@ function initializeSocketServer(server) {
 
       rooms[roomCode] = {
         host: uid,
-        users: [{ socket: socket.id, username, uid }]
+        users: [{ socket: socket.id, username, uid, readyStatus: false }]
       };
 
       socket.join(roomCode);
@@ -45,7 +47,8 @@ function initializeSocketServer(server) {
           rooms[roomCode].users.push({
             socket: socket.id,
             username: username,
-            uid: uid
+            uid: uid,
+            readyStatus: false
           });
         } else {
           existingUser.socket = socket.id;
@@ -57,7 +60,8 @@ function initializeSocketServer(server) {
     
         const usersInRoom = rooms[roomCode].users.map(roomUser => ({
           username: roomUser.username,
-          isHost: roomUser.uid === rooms[roomCode].host
+          isHost: roomUser.uid === rooms[roomCode].host,
+          readyStatus: roomUser.readyStatus
         }));
     
         // update callback function with the list of users
@@ -65,6 +69,11 @@ function initializeSocketServer(server) {
     
         // alert users that u joined room
         ioInstance.to(roomCode).emit('update-room', usersInRoom);
+    });
+
+    socket.on('update-ready', (roomCode, userId) => {
+        console.log("hey");
+        updateReady(roomCode, userId);
     });
 
     socket.on('disconnect', () => {
@@ -75,7 +84,8 @@ function initializeSocketServer(server) {
 
           ioInstance.to(roomCode).emit('update-room', rooms[roomCode].users.map(user => ({
             username: user.username,
-            isHost: user.uid === rooms[roomCode].host
+            isHost: user.uid === rooms[roomCode].host,
+            readyStatus: user.readyStatus
           })));
 
         //   if (rooms[roomCode].users.length === 0) {
@@ -94,6 +104,17 @@ function initializeSocketServer(server) {
 
 function getRooms() {
     return rooms;
+}
+
+function updateReady(roomCode, userId) {
+    const user = rooms[roomCode].users.find(user => user.uid === userId);
+    user.readyStatus = !user.readyStatus;
+    ioInstance.to(roomCode).emit('update-room', rooms[roomCode].users.map(user => ({
+        username: user.username,
+        isHost: user.uid === rooms[roomCode].host,
+        readyStatus: user.readyStatus
+    })));
+    console.log(rooms.users);
 }
 
 function generateRoomCode() {
