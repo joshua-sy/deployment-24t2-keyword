@@ -1,24 +1,33 @@
-"use client"
+'use client';
 
-import Image from "next/image";
-import React, { useState } from 'react';
-import Redbutton from '@/components/keyword/redButton/RedButton';
+import React, { useState, useEffect } from 'react';
+import RedButton from '@/components/keyword/redButton/RedButton';
 import GreyButton from '@/components/keyword/greyButton/GreyButton';
+import { useRouter } from "next/navigation";
+import { io, Socket } from 'socket.io-client';
+import { DefaultEventsMap } from '@socket.io/component-emitter';
+import { v4 as uuidv4 } from 'uuid';
+import FormModal from "@/components/keyword/FormModal/FormModal";
 import Rules from "@/components/keyword/rules/Rules";
 
-const howToPlayContent = `
-EVERY PLAYER WILL BE GIVEN A KEYWORD, THEY ARE A [red]SCIENTIST[/red]. HOWEVER, ONE OF THE PLAYERS WILL NOT BE GIVEN A WORD. THEY ARE THE [red]CYBORG[/red].
-
-THE [red]CYBORG'S[/red] GOAL IS TO FIND OUT WHAT THE WORD IS AND TRY TO FIT IN.
-THE [red]SCIENTISTS'[/red] GOAL IS TO FIGURE OUT WHO THE [red]CYBORG[/red] IS.
-
-THE PLAYERS WILL GO AROUND CLOCKWISE AND SAY A WORD RELATING TO THE KEYWORD. FOR EXAMPLE, IF THE WORD WAS "[green]LEBRON JAMES[/green]", YOU WOULD SAY "[green]BASKETBALL[/green]".
-
-CONTINUE UNTIL THE TIMER RUNS OUT OR IF THE PLAYERS ARE READY TO VOTE FOR THE [red]CYBORG[/red].
-`;
-
 export default function Home() {
+  const router = useRouter();
+  const [socket, setSocket] = useState<Socket<DefaultEventsMap, DefaultEventsMap> | undefined>(undefined);
+  const [roomCodeToCheck, setRoomCodeToCheck] = useState<string | null>(null);
+  const [name, setName] = useState<string | null>(null);
   const [showRules, setShowRules] = useState(false);
+  // Trigger room existence check only if roomCodeToCheck is set
+
+  const howToPlayContent = `
+  EVERY PLAYER WILL BE GIVEN A KEYWORD, THEY ARE A [red]SCIENTIST[/red]. HOWEVER, ONE OF THE PLAYERS WILL NOT BE GIVEN A WORD. THEY ARE THE [red]CYBORG[/red].
+
+  THE [red]CYBORG'S[/red] GOAL IS TO FIND OUT WHAT THE WORD IS AND TRY TO FIT IN.
+  THE [red]SCIENTISTS'[/red] GOAL IS TO FIGURE OUT WHO THE [red]CYBORG[/red] IS.
+
+  THE PLAYERS WILL GO AROUND CLOCKWISE AND SAY A WORD RELATING TO THE KEYWORD. FOR EXAMPLE, IF THE WORD WAS "[green]LEBRON JAMES[/green]", YOU WOULD SAY "[green]BASKETBALL[/green]".
+
+  CONTINUE UNTIL THE TIMER RUNS OUT OR IF THE PLAYERS ARE READY TO VOTE FOR THE [red]CYBORG[/red].
+  `;
 
   const handleShowRules = () => {
     setShowRules(true);
@@ -26,6 +35,55 @@ export default function Home() {
   const handleHideRules = () => {
     setShowRules(false);
   };
+
+  const hostGame = () => {
+    // get username from modal
+    const username = "kj";
+    localStorage.setItem('username', username);
+
+    const userId = uuidv4(); // Generate a unique user ID
+    localStorage.setItem('userId', userId);
+
+    console.log("ROOM");
+
+    socket?.emit('create-room', username, userId, (newCode: any) => {
+      router.push(`/keyword/gameroom?roomCode=${newCode.roomCode}`);
+    });
+  };
+
+  const handleJoin = (roomCode: string, name: string) => {
+    setRoomCodeToCheck(roomCode);
+    setName(name);
+    localStorage.setItem('username', name);
+  }
+
+  useEffect(() => {
+    if (roomCodeToCheck && name) {
+      const userId = uuidv4(); // Generate a unique user ID
+      socket?.emit("join-room", roomCodeToCheck, name, userId, (response: any) => {
+        if (response.error) {
+          alert(response.error);
+        } else {
+          router.push(`/keyword/gameroom?roomCode=${roomCodeToCheck}`);
+        }
+      });
+    } else if (roomCodeToCheck) {
+      console.log("Room does not exist.");
+    }
+  }, [roomCodeToCheck, name, router]);
+
+  useEffect(() => {
+    const newSocket: Socket<DefaultEventsMap, DefaultEventsMap> = io('http://localhost:4000');
+    setSocket(newSocket);
+
+    newSocket.on('connect', () => {
+      console.log(`You connected with socket id: ${newSocket.id}`);
+    });
+
+    return () => {
+      newSocket.close();
+    };
+  }, []);
 
   return (
     <>
@@ -43,8 +101,8 @@ export default function Home() {
                 </div>
               </div>
               <div>
-                <Redbutton label={"HOST ROOM"} />
-                <Redbutton label={"JOIN ROOM"} />
+                <RedButton onClick={hostGame} label={"HOST ROOM"} />
+                <FormModal onSubmit={handleJoin} />
               </div>
               <div>
                 <GreyButton label="HOW TO PLAY" onClick={handleShowRules} />
