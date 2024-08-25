@@ -9,6 +9,7 @@ import { io, Socket } from 'socket.io-client';
 import { DefaultEventsMap } from '@socket.io/component-emitter';
 import { v4 as uuidv4 } from 'uuid';
 import FormModal from "@/components/keyword/FormModal/FormModal";
+import HostRoomModal from "@/components/keyword/HostRoomModal/HostRoomModal";
 import useCheckRoom from "../hooks/checkRoom";
 
 export default function Home() {
@@ -19,17 +20,14 @@ export default function Home() {
   // Trigger room existence check only if roomCodeToCheck is set
   const roomExists = useCheckRoom(roomCodeToCheck ?? '');
 
-  const hostGame = () => {    
+  const hostGame = (name: string) => {    
     // get username from modal
-    const username = "kj";
-    localStorage.setItem('username', username);
+    localStorage.setItem('username', name);
 
     const userId = uuidv4(); // Generate a unique user ID
     localStorage.setItem('userId', userId);
 
-    console.log("ROOM");
-
-    socket?.emit('create-room', username, userId, (newCode: any) => {
+    socket?.emit('create-room', name, userId, (newCode: any) => {
       router.push(`/keyword/gameroom?roomCode=${newCode.roomCode}`);
     });
   };
@@ -78,7 +76,7 @@ export default function Home() {
           </div>
           
           <div>
-            <RedButton onClick={hostGame} label={"HOST ROOM"}/>
+            <HostRoomModal onSubmit={hostGame} />
             <FormModal onSubmit={handleJoin} />
           </div>
           <div>
