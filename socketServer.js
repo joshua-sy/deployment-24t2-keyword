@@ -35,7 +35,7 @@ function initializeSocketServer(server) {
     socket.on('join-room', (roomCode, username, uid, callback) => {
         if (!rooms[roomCode]) {
           // If the room doesn't exist, send an error message to the client
-          callback({ error: "Room ${roomCode} does not exist." });
+          callback({ error: `Room ${roomCode} does not exist.` });
           return;
         }
     
@@ -51,7 +51,6 @@ function initializeSocketServer(server) {
           existingUser.socket = socket.id;
         }
     
-        
         socket.join(roomCode);
         
         console.log(`${username} joined room: ${roomCode}`);

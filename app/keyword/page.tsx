@@ -10,7 +10,6 @@ import { DefaultEventsMap } from '@socket.io/component-emitter';
 import { v4 as uuidv4 } from 'uuid';
 import FormModal from "@/components/keyword/FormModal/FormModal";
 import HostRoomModal from "@/components/keyword/HostRoomModal/HostRoomModal";
-import useCheckRoom from "../hooks/checkRoom";
 
 export default function Home() {
   const router = useRouter();
@@ -18,7 +17,6 @@ export default function Home() {
   const [roomCodeToCheck, setRoomCodeToCheck] = useState<string | null>(null);
   const [name, setName] = useState<string | null>(null);
   // Trigger room existence check only if roomCodeToCheck is set
-  const roomExists = useCheckRoom(roomCodeToCheck ?? '');
 
   const hostGame = (name: string) => {    
     // get username from modal
@@ -39,15 +37,19 @@ export default function Home() {
   }
 
   useEffect(() => {
-    console.log("roomExists: ", roomExists);
-    console.log("roomCodeToCheck: ", roomCodeToCheck);
-    console.log("name: ", name);
     if (roomCodeToCheck && name) {
-      router.push(`/keyword/gameroom?roomCode=${roomCodeToCheck}`);
+      const userId = uuidv4(); // Generate a unique user ID
+      socket?.emit("join-room", roomCodeToCheck, name, userId, (response: any) => {
+        if (response.error) {
+          alert(response.error);
+        } else {
+          router.push(`/keyword/gameroom?roomCode=${roomCodeToCheck}`);
+        }
+      });
     } else if (roomCodeToCheck) {
       console.log("Room does not exist.");
     }
-  }, [roomExists, roomCodeToCheck, name, router]);
+  }, [roomCodeToCheck, name, router]);
 
   useEffect(() => {
     const newSocket: Socket<DefaultEventsMap, DefaultEventsMap> = io('http://localhost:4000');
@@ -74,7 +76,6 @@ export default function Home() {
               <h1 className="keyWordText text-white text-7xl"> KEYWORD </h1>
             </div>
           </div>
-          
           <div>
             <HostRoomModal onSubmit={hostGame} />
             <FormModal onSubmit={handleJoin} />

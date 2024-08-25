@@ -15,6 +15,9 @@ const config: Config = {
       },
       colors: {
         'figma-red': '#E04E4E',
+        'faded-max-white': 'rgba(255, 255, 255, 0.1)',
+        'faded-mid-white': 'rgba(255, 255, 255, 0.2)',
+
       }
     },
   },
