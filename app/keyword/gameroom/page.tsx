@@ -18,9 +18,9 @@ const GameRoom = ({
   const [userId, setUserId] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const roomCode = searchParams.roomCode;
+  const userAction = localStorage.getItem('isHost');
 
   const handleReady = (roomCode: String, userId: string) => {
-    console.log("bruhv");
     socket.emit('update-ready', roomCode, userId, (usersInRoom: any) => {
       setUsers(usersInRoom);
     });
@@ -36,6 +36,10 @@ const GameRoom = ({
 
   useEffect(() => {
     if (roomCode && username && userId) {
+      if (userAction === 'true') {
+        socket.emit('create-room', username, userId, roomCode);
+      }
+
       socket?.emit('join-room', roomCode, username, userId, (usersInRoom: any) => {
         if (usersInRoom.error) {
           alert(usersInRoom.error);
@@ -52,6 +56,7 @@ const GameRoom = ({
       socket.on('update-room', handleUpdateRoom);
 
       return () => {
+        socket.emit('leave-room', roomCode, userId);
         socket.off('update-room', handleUpdateRoom);
       };
     }

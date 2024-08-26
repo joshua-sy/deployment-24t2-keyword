@@ -16,21 +16,33 @@ export default function Home() {
   const [name, setName] = useState<string | null>(null);
   // Trigger room existence check only if roomCodeToCheck is set
 
+  // Generate room code
+  function generateRoomCode() {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let roomCode = '';
+    for (let i = 0; i < 4; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      roomCode += characters[randomIndex];
+    }
+    return roomCode;
+  }
+
   const hostGame = (name: string) => {    
+    const userId = uuidv4(); // Generate a unique user ID
     // get username from modal
     localStorage.setItem('username', name);
-
-    const userId = uuidv4(); // Generate a unique user ID
     localStorage.setItem('userId', userId);
+    localStorage.setItem('isHost', 'true');
 
-    socket?.emit('create-room', name, userId, (newCode: any) => {
-      router.push(`/keyword/gameroom?roomCode=${newCode.roomCode}`);
-    });
+    const newCode = generateRoomCode();
+
+    router.push(`/keyword/gameroom?roomCode=${newCode}`);
   };
 
   const handleJoin = (roomCode: string, name: string) => {
     setRoomCodeToCheck(roomCode);
     setName(name);
+    localStorage.setItem('isHost', "false");
     localStorage.setItem('username', name);
   }
 
