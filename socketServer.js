@@ -81,7 +81,8 @@ function initializeSocketServer(server) {
 
 
             if (rooms[roomCode].users.length === 0) {
-            delete rooms[roomCode];
+                delete rooms[roomCode];
+                console.log(`Room ${roomCode} deleted as it is now empty.`);
             }
 
             break;
@@ -90,9 +91,10 @@ function initializeSocketServer(server) {
     });
 
     socket.on('leave-room', (roomCode, userId) => {
+        const userIndex = rooms[roomCode].users.findIndex(user => user.uid === userId);
         socket.leave(roomCode);
         console.log(`${userId} left room: ${roomCode}`);
-        const userIndex = rooms[roomCode].users.findIndex(user => user.uid === userId);
+        
         if (userIndex !== -1) {
             rooms[roomCode].users.splice(userIndex, 1);
   
@@ -124,6 +126,5 @@ function updateReady(roomCode, userId) {
         readyStatus: user.readyStatus
     })));
 }
-
 
 module.exports = { initializeSocketServer };
