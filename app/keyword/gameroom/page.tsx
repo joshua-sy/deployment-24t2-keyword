@@ -4,6 +4,9 @@ import RedButton from '@/components/keyword/redButton/RedButton';
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
+import CategoryDropDown from '@/components/keyword/categoryDropDown/categoryDropDown';
+import CyborgDropDown from '@/components/keyword/cyborgDropDown/cyborgDropDown';
+import TimeDropDown from '@/components/keyword/timeDropDown/timeDropDown';
 
 const socket = io('http://localhost:4000');
 
@@ -19,11 +22,29 @@ const GameRoom = ({
   const [username, setUsername] = useState<string | null>(null);
   const roomCode = searchParams.roomCode;
   const userAction = localStorage.getItem('isHost');
+  const [selectedCategory, setSelectedCategory] = useState<string>('CELEBRITIES');
+  const [selectedCyborg, setSelectedCyborg] = useState<string>('1');
+  const [selectedTime, setSelectedTime] = useState<string>('4 min');
 
   const handleReady = (roomCode: String, userId: string) => {
     socket.emit('update-ready', roomCode, userId, (usersInRoom: any) => {
       setUsers(usersInRoom);
     });
+  };
+
+  const handleCategorySelect = (value: string) => {
+    setSelectedCategory(value);
+    console.log('Selected category:', value);
+  };
+
+  const handleCyborgSelect = (value: string) => {
+    setSelectedCyborg(value);
+    console.log('Selected cyborg:', value);
+  };
+
+  const handleTimeSelect = (value: string) => {
+    setSelectedTime(value);
+    console.log('Selected time:', value);
   };
 
   useEffect(() => {
@@ -65,8 +86,10 @@ const GameRoom = ({
   return (
     <div>
       <h1>Welcome to the Game Room</h1>
-      <p>This is the game room page</p>
-      <p>Your room code is: {roomCode}</p>
+      <p>CODE: {roomCode}</p>
+      <CategoryDropDown onSelect={handleCategorySelect}/>
+      <CyborgDropDown onSelect={handleCyborgSelect}/>
+      <TimeDropDown onSelect={handleTimeSelect}/>
       <p>list of users:</p>
       <ul>
         {users.map((user, index) => (
