@@ -91,6 +91,9 @@ function initializeSocketServer(server) {
     });
 
     socket.on('leave-room', (roomCode, userId) => {
+        if (!rooms[roomCode] || !rooms[roomCode].users) {
+            return;
+        }
         const userIndex = rooms[roomCode].users.findIndex(user => user.uid === userId);
         socket.leave(roomCode);
         console.log(`${userId} left room: ${roomCode}`);

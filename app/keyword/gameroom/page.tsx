@@ -7,6 +7,7 @@ import { io } from 'socket.io-client';
 import CategoryDropDown from '@/components/keyword/categoryDropDown/categoryDropDown';
 import CyborgDropDown from '@/components/keyword/cyborgDropDown/cyborgDropDown';
 import TimeDropDown from '@/components/keyword/timeDropDown/timeDropDown';
+import StartButton from '@/components/keyword/startButton/startButton';
 
 const socket = io('http://localhost:4000');
 
@@ -21,7 +22,8 @@ const GameRoom = ({
   const [userId, setUserId] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const roomCode = searchParams.roomCode;
-  const userAction = localStorage.getItem('isHost');
+  const [isHost, setIsHost] = useState<boolean>(false);
+  const [allReady, setAllReady] = useState<boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('CELEBRITIES');
   const [selectedCyborg, setSelectedCyborg] = useState<string>('1');
   const [selectedTime, setSelectedTime] = useState<string>('4 min');
@@ -31,6 +33,16 @@ const GameRoom = ({
       setUsers(usersInRoom);
     });
   };
+
+  const countReady = () => {
+    let count = 0;
+    users.forEach((user) => {
+      if (user.readyStatus) {
+        count++;
+      }
+    });
+    return count;
+  }
 
   const handleCategorySelect = (value: string) => {
     setSelectedCategory(value);
@@ -49,15 +61,27 @@ const GameRoom = ({
 
   useEffect(() => {
     // Fetch username and userId from localStorage
+    const isHost = localStorage.getItem('isHost') === 'true' ? true : false;
     const storedUsername = localStorage.getItem('username');
     const storedUserId = localStorage.getItem('userId');
     setUsername(storedUsername);
     setUserId(storedUserId);
+    setIsHost(isHost);
   }, []);
 
   useEffect(() => {
+    console.log(countReady());
+    console.log(users.length);
+    if (countReady() === users.length) {
+      setAllReady(true);
+    } else {
+      setAllReady(false);
+    }
+  }, [users]);
+
+  useEffect(() => {
     if (roomCode && username && userId) {
-      if (userAction === 'true') {
+      if (isHost) {
         socket.emit('create-room', username, userId, roomCode);
       }
 
@@ -87,9 +111,9 @@ const GameRoom = ({
     <div>
       <h1>Welcome to the Game Room</h1>
       <p>CODE: {roomCode}</p>
-      <CategoryDropDown onSelect={handleCategorySelect}/>
-      <CyborgDropDown onSelect={handleCyborgSelect}/>
-      <TimeDropDown onSelect={handleTimeSelect}/>
+      {isHost && <CategoryDropDown onSelect={handleCategorySelect}/>}
+      {isHost && <CyborgDropDown onSelect={handleCyborgSelect}/>}
+      {isHost && <TimeDropDown onSelect={handleTimeSelect}/>}
       <p>list of users:</p>
       <ul>
         {users.map((user, index) => (
@@ -99,6 +123,8 @@ const GameRoom = ({
         ))}
       </ul>
       <RedButton onClick={() => {userId && handleReady(roomCode, userId)}} label='READY UP'/>
+      {/*make it so that once all are ready then able to be clicked*/}
+      {isHost && <StartButton label='START GAME' allReady={allReady} />}
     </div>
   );
 };
