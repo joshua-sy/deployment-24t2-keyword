@@ -9,6 +9,7 @@ import { io, Socket } from 'socket.io-client';
 import { DefaultEventsMap } from '@socket.io/component-emitter';
 import { v4 as uuidv4 } from 'uuid';
 import FormModal from "@/components/keyword/FormModal/FormModal";
+import PlayerIdentity from "@/components/keyword/playerIdentity/PlayerIdentity";
 
 export default function Home() {
   const router = useRouter();
@@ -17,7 +18,7 @@ export default function Home() {
   const [name, setName] = useState<string | null>(null);
   // Trigger room existence check only if roomCodeToCheck is set
 
-  const hostGame = () => {    
+  const hostGame = () => {
     // get username from modal
     const username = "kj";
     localStorage.setItem('username', username);
@@ -79,14 +80,15 @@ export default function Home() {
             </div>
           </div>
           <div>
-            <RedButton onClick={hostGame} label={"HOST ROOM"}/>
+            <RedButton onClick={hostGame} label={"HOST ROOM"} />
             <FormModal onSubmit={handleJoin} />
           </div>
           <div>
-            <GreyButton label="HOW TO PLAY"/>
+            <GreyButton label="HOW TO PLAY" />
           </div>
-        </div>        
+        </div>
       </div>
+      <PlayerIdentity />
     </>
   );
 }
