@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import RedButton from '@/components/keyword/redButton/RedButton';
 import GreyButton from '@/components/keyword/greyButton/GreyButton';
 import { useRouter } from "next/navigation";
 import { io, Socket } from 'socket.io-client';
 import { DefaultEventsMap } from '@socket.io/component-emitter';
 import { v4 as uuidv4 } from 'uuid';
 import FormModal from "@/components/keyword/FormModal/FormModal";
+import HostRoomModal from "@/components/keyword/HostRoomModal/HostRoomModal";
 import Rules from "@/components/keyword/rules/Rules";
 
 export default function Home() {
@@ -18,6 +18,16 @@ export default function Home() {
   const [showRules, setShowRules] = useState(false);
   // Trigger room existence check only if roomCodeToCheck is set
 
+  // Generate room code
+  function generateRoomCode() {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let roomCode = '';
+    for (let i = 0; i < 4; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      roomCode += characters[randomIndex];
+    }
+    return roomCode;
+  }
   const howToPlayContent = `
   EVERY PLAYER WILL BE GIVEN A KEYWORD, THEY ARE A [red]SCIENTIST[/red]. HOWEVER, ONE OF THE PLAYERS WILL NOT BE GIVEN A WORD. THEY ARE THE [red]CYBORG[/red].
 
@@ -36,24 +46,22 @@ export default function Home() {
     setShowRules(false);
   };
 
-  const hostGame = () => {
-    // get username from modal
-    const username = "kj";
-    localStorage.setItem('username', username);
-
+  const hostGame = (name: string) => {    
     const userId = uuidv4(); // Generate a unique user ID
+    // get username from modal
+    localStorage.setItem('username', name);
     localStorage.setItem('userId', userId);
+    localStorage.setItem('isHost', 'true');
 
-    console.log("ROOM");
+    const newCode = generateRoomCode();
 
-    socket?.emit('create-room', username, userId, (newCode: any) => {
-      router.push(`/keyword/gameroom?roomCode=${newCode.roomCode}`);
-    });
+    router.push(`/keyword/gameroom?roomCode=${newCode}`);
   };
 
   const handleJoin = (roomCode: string, name: string) => {
     setRoomCodeToCheck(roomCode);
     setName(name);
+    localStorage.setItem('isHost', "false");
     localStorage.setItem('username', name);
   }
 
@@ -103,7 +111,7 @@ export default function Home() {
                 </div>
               </div>
               <div>
-                <RedButton onClick={hostGame} label={"HOST ROOM"} />
+                <HostRoomModal onSubmit={hostGame} />
                 <FormModal onSubmit={handleJoin} />
               </div>
               <div>

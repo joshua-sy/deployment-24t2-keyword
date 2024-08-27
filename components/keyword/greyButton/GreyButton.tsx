@@ -24,5 +24,4 @@ const GreyButton: React.FC<greyButtonProps> = ({
   )
 
 };
-
 export default GreyButton;
