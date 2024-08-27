@@ -31,3 +31,28 @@ body {
     text-wrap: balance;
   }
 }
+
+@keyframes slide-up {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+.rulesContainer.animate-slide-up {
+  animation: slide-up 0.5s ease-in-out;
+}
+
+html, body {
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .absolute {
+    overflow: hidden;
+  }

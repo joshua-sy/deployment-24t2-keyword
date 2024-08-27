@@ -15,21 +15,15 @@ function initializeSocketServer(server) {
   ioInstance.on('connection', (socket) => {
     console.log('New connection:', socket.id);
 
-    socket.on('create-room', (username, uid, callback) => {
-      let roomCode = generateRoomCode();
-      while (rooms[roomCode]) {
-        roomCode = generateRoomCode();
-      }
-
+    socket.on('create-room', (username, uid, roomCode) => {
       rooms[roomCode] = {
         host: uid,
-        users: [{ socket: socket.id, username, uid }]
+        users: [{ socket: socket.id, username, uid, readyStatus: false }]
       };
 
       socket.join(roomCode);
       console.log(`${username} created room: ${roomCode}`);
       console.log(rooms);
-      callback({ roomCode });
     });
 
     socket.on('join-room', (roomCode, username, uid, callback) => {
@@ -45,7 +39,8 @@ function initializeSocketServer(server) {
           rooms[roomCode].users.push({
             socket: socket.id,
             username: username,
-            uid: uid
+            uid: uid,
+            readyStatus: false
           });
         } else {
           existingUser.socket = socket.id;
@@ -57,7 +52,8 @@ function initializeSocketServer(server) {
     
         const usersInRoom = rooms[roomCode].users.map(roomUser => ({
           username: roomUser.username,
-          isHost: roomUser.uid === rooms[roomCode].host
+          isHost: roomUser.uid === rooms[roomCode].host,
+          readyStatus: roomUser.readyStatus
         }));
     
         // update callback function with the list of users
@@ -67,24 +63,53 @@ function initializeSocketServer(server) {
         ioInstance.to(roomCode).emit('update-room', usersInRoom);
     });
 
+    socket.on('update-ready', (roomCode, userId) => {
+        updateReady(roomCode, userId);
+    });
+
     socket.on('disconnect', () => {
       for (const roomCode in rooms) {
         const userIndex = rooms[roomCode].users.findIndex(user => user.socket === socket.id);
         if (userIndex !== -1) {
-          rooms[roomCode].users.splice(userIndex, 1);
+            rooms[roomCode].users.splice(userIndex, 1);
 
-          ioInstance.to(roomCode).emit('update-room', rooms[roomCode].users.map(user => ({
+            ioInstance.to(roomCode).emit('update-room', rooms[roomCode].users.map(user => ({
             username: user.username,
-            isHost: user.uid === rooms[roomCode].host
-          })));
+            isHost: user.uid === rooms[roomCode].host,
+            readyStatus: user.readyStatus
+            })));
 
-        //   if (rooms[roomCode].users.length === 0) {
-        //     delete rooms[roomCode];
-        //   }
 
-          break;
-        }
+            if (rooms[roomCode].users.length === 0) {
+                delete rooms[roomCode];
+                console.log(`Room ${roomCode} deleted as it is now empty.`);
+            }
+
+            break;
+}       
       }
+    });
+
+    socket.on('leave-room', (roomCode, userId) => {
+        const userIndex = rooms[roomCode].users.findIndex(user => user.uid === userId);
+        socket.leave(roomCode);
+        console.log(`${userId} left room: ${roomCode}`);
+        
+        if (userIndex !== -1) {
+            rooms[roomCode].users.splice(userIndex, 1);
+  
+            ioInstance.to(roomCode).emit('update-room', rooms[roomCode].users.map(user => ({
+              username: user.username,
+              isHost: user.uid === rooms[roomCode].host,
+              readyStatus: user.readyStatus
+            })));
+
+            // If the room is empty, delete it
+            if (rooms[roomCode].users.length === 0) {
+                delete rooms[roomCode];
+                console.log(`Room ${roomCode} deleted as it is now empty.`);
+            }
+        }
     });
   });
 
@@ -92,18 +117,14 @@ function initializeSocketServer(server) {
   return ioInstance;
 }
 
-function getRooms() {
-    return rooms;
+function updateReady(roomCode, userId) {
+    const user = rooms[roomCode].users.find(user => user.uid === userId);
+    user.readyStatus = !user.readyStatus;
+    ioInstance.to(roomCode).emit('update-room', rooms[roomCode].users.map(user => ({
+        username: user.username,
+        isHost: user.uid === rooms[roomCode].host,
+        readyStatus: user.readyStatus
+    })));
 }
 
-function generateRoomCode() {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let roomCode = '';
-  for (let i = 0; i < 4; i++) {
-    const randomIndex = Math.floor(Math.random() * characters.length);
-    roomCode += characters[randomIndex];
-  }
-  return roomCode;
-}
-
-module.exports = { initializeSocketServer, getRooms };
+module.exports = { initializeSocketServer };
