@@ -90,6 +90,14 @@ function initializeSocketServer(server) {
       }
     });
 
+    socket.on('check-room-exist', (roomCode, callback) => {
+      if (!rooms[roomCode]) {
+        callback({ error: `Room ${roomCode} does not exist.` });
+      } else {
+        return;
+      }
+    });
+
     socket.on('leave-room', (roomCode, userId) => {
         if (!rooms[roomCode] || !rooms[roomCode].users) {
             return;

@@ -83,6 +83,14 @@ const GameRoom = ({
     if (roomCode && username && userId) {
       if (isHost) {
         socket.emit('create-room', username, userId, roomCode);
+      } else {
+        socket.emit("check-room-exist", roomCode, (returnMessage: any) => {
+          if (returnMessage.error && !isHost) {
+            alert(returnMessage.error);
+            window.history.back();
+            return;
+          }
+        });
       }
 
       socket?.emit('join-room', roomCode, username, userId, (usersInRoom: any) => {
