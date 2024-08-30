@@ -7,6 +7,7 @@ import Menu from '@mui/material/Menu';
 
 // make it based on user length.
 const options = [
+    "1",
     "RANDOM"
 ];
 

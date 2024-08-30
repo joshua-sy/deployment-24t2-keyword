@@ -59,6 +59,19 @@ const GameRoom = ({
     console.log('Selected time:', value);
   };
 
+  const findNewHost = () => {
+    console.log(users);
+    for (let user of users) {
+      console.log(`${user.username}`);
+      if (!user.isHost) {
+        console.log(`${user.username} is now the host`);
+        user.isHost = true;
+        socket.emit("update-room", users);
+        break;
+      }
+    }
+  }
+
   useEffect(() => {
     // Fetch username and userId from localStorage
     const isHost = localStorage.getItem('isHost') === 'true' ? true : false;
@@ -70,8 +83,6 @@ const GameRoom = ({
   }, []);
 
   useEffect(() => {
-    console.log(countReady());
-    console.log(users.length);
     if (countReady() === users.length) {
       setAllReady(true);
     } else {
@@ -110,6 +121,12 @@ const GameRoom = ({
 
       return () => {
         socket.emit('leave-room', roomCode, userId);
+        console.log("LEAVING G");
+        console.log(users);
+        // if (isHost) {
+        //   console.log("HELLO");
+        //   findNewHost();
+        // }
         socket.off('update-room', handleUpdateRoom);
       };
     }
