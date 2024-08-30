@@ -49,12 +49,15 @@ function initializeSocketServer(server) {
         socket.join(roomCode);
         
         console.log(`${username} joined room: ${roomCode}`);
+        console.log('users in room ', roomCode, ' are ', rooms[roomCode].users)
     
         const usersInRoom = rooms[roomCode].users.map(roomUser => ({
           username: roomUser.username,
           isHost: roomUser.uid === rooms[roomCode].host,
           readyStatus: roomUser.readyStatus
         }));
+
+        console.log('users in room ', usersInRoom)
     
         // update callback function with the list of users
         callback(usersInRoom);
@@ -64,7 +67,8 @@ function initializeSocketServer(server) {
     });
 
     socket.on('update-ready', (roomCode, userId) => {
-        updateReady(roomCode, userId);
+      console.log('updated ready for userId: ', userId)  
+      updateReady(roomCode, userId);
     });
 
     socket.on('disconnect', () => {
@@ -129,8 +133,11 @@ function initializeSocketServer(server) {
 }
 
 function updateReady(roomCode, userId) {
-    const user = rooms[roomCode].users.find(user => user.uid === userId);
+  console.log('users in updateReadyAre for roomCode are : ', rooms[roomCode])
+  console.log('rooms data structure ', rooms)
+  const user = rooms[roomCode].users.find(user => user.uid === userId);
     user.readyStatus = !user.readyStatus;
+    console.log('update ready for userID: ', userId)
     ioInstance.to(roomCode).emit('update-room', rooms[roomCode].users.map(user => ({
         username: user.username,
         isHost: user.uid === rooms[roomCode].host,
