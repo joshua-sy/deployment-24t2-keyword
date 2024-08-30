@@ -7,6 +7,7 @@ import { io } from 'socket.io-client';
 import CategoryDropDown from '@/components/keyword/categoryDropDown/categoryDropDown';
 import CyborgDropDown from '@/components/keyword/cyborgDropDown/cyborgDropDown';
 import TimeDropDown from '@/components/keyword/timeDropDown/timeDropDown';
+import PlayerBoard from '@/components/keyword/playerBoard/playerBoard';
 
 const socket = io('http://localhost:4000');
 
@@ -84,22 +85,27 @@ const GameRoom = ({
   }, [roomCode, username, userId]);
 
   return (
-    <div>
-      <h1>Welcome to the Game Room</h1>
-      <p>CODE: {roomCode}</p>
-      <CategoryDropDown onSelect={handleCategorySelect}/>
-      <CyborgDropDown onSelect={handleCyborgSelect}/>
-      <TimeDropDown onSelect={handleTimeSelect}/>
-      <p>list of users:</p>
-      <ul>
-        {users.map((user, index) => (
-          <li key={index}>
-            {user.username} {user.isHost && "(Host)"} {!user.readyStatus && "Not"} {"Ready"}
-          </li>
-        ))}
-      </ul>
-      <RedButton onClick={() => {userId && handleReady(roomCode, userId)}} label='READY UP'/>
-    </div>
+    <>
+      <div className="backgroundDiv h-screen bg-cover bg-center" style={{ backgroundImage: 'url(/robotBackground.png)' }}>
+        <div className="contentContainer text-center w-[500px] mx-auto">
+          <h1>Welcome to the Game Room</h1>
+            <p>CODE: {roomCode}</p>
+            <CategoryDropDown onSelect={handleCategorySelect}/>
+            <CyborgDropDown onSelect={handleCyborgSelect}/>
+            <TimeDropDown onSelect={handleTimeSelect}/>
+            <p>list of users:</p>
+            <ul>
+              {users.map((user, index) => (
+                <li key={index}>
+                  {user.username} {user.isHost && "(Host)"} {!user.readyStatus && "Not"} {"Ready"}
+                </li>
+              ))}
+            </ul>
+            <PlayerBoard users={users}/>
+            <RedButton onClick={() => {userId && handleReady(roomCode, userId)}} label='READY UP'/>
+        </div>
+      </div>
+    </>
   );
 };
 
