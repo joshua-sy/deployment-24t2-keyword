@@ -9,7 +9,7 @@ interface User {
 }
 
 interface PlayerBoardProps {
-  users: [];
+  users: User[];
 }
 
 const PlayerBoard: React.FC<PlayerBoardProps> = ({
@@ -79,7 +79,7 @@ const PlayerBoard: React.FC<PlayerBoardProps> = ({
               </div>
             </div>
             {FadedBorder()}
-          {sampleUsers.map((user: User, index: number) => (
+          {users.map((user: User, index: number) => (
             <div key={index} className='playerContainer'>
               <div className='flex justify-between py-4 px-5 text-lg items-center'>
                 <div className='playerName flex items-center'>
@@ -95,7 +95,7 @@ const PlayerBoard: React.FC<PlayerBoardProps> = ({
                   {user.readyStatus ? 'READY' : 'NOT READY'}
                 </div>
               </div>
-              {index < sampleUsers.length - 1 && FadedBorder()}
+              {index < users.length - 1 && FadedBorder()}
             </div>
           ))}
         </div>

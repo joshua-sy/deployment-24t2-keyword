@@ -8,6 +8,7 @@ import CategoryDropDown from '@/components/keyword/categoryDropDown/categoryDrop
 import CyborgDropDown from '@/components/keyword/cyborgDropDown/cyborgDropDown';
 import TimeDropDown from '@/components/keyword/timeDropDown/timeDropDown';
 import StartButton from '@/components/keyword/startButton/startButton';
+import PlayerBoard from '@/components/keyword/playerBoard/playerBoard';
 
 const socket = io('http://localhost:4000');
 
@@ -133,24 +134,29 @@ const GameRoom = ({
   }, [roomCode, username, userId]);
 
   return (
-    <div>
-      <h1>Welcome to the Game Room</h1>
-      <p>CODE: {roomCode}</p>
-      {isHost && <CategoryDropDown onSelect={handleCategorySelect}/>}
-      {isHost && <CyborgDropDown onSelect={handleCyborgSelect}/>}
-      {isHost && <TimeDropDown onSelect={handleTimeSelect}/>}
-      <p>list of users:</p>
-      <ul>
-        {users.map((user, index) => (
-          <li key={index}>
-            {user.username} {user.isHost && "(Host)"} {!user.readyStatus && "Not"} {"Ready"}
-          </li>
-        ))}
-      </ul>
-      <RedButton onClick={() => {userId && handleReady(roomCode, userId)}} label='READY UP'/>
-      {/*make it so that once all are ready then able to be clicked*/}
-      {isHost && <StartButton label='START GAME' allReady={allReady} />}
-    </div>
+    <>
+      <div className="backgroundDiv h-screen bg-cover bg-center" style={{ backgroundImage: 'url(/robotBackground.png)' }}>
+        <div className="contentContainer text-center w-[500px] mx-auto">
+          <h1>Welcome to the Game Room</h1>
+            <p>CODE: {roomCode}</p>
+            <CategoryDropDown onSelect={handleCategorySelect}/>
+            <CyborgDropDown onSelect={handleCyborgSelect}/>
+            <TimeDropDown onSelect={handleTimeSelect}/>
+            <p>list of users:</p>
+            <ul>
+              {users.map((user, index) => (
+                <li key={index}>
+                  {user.username} {user.isHost && "(Host)"} {!user.readyStatus && "Not"} {"Ready"}
+                </li>
+              ))}
+            </ul>
+            <PlayerBoard users={users}/>
+            <RedButton onClick={() => {userId && handleReady(roomCode, userId)}} label='READY UP'/>
+            {/*make it so that once all are ready then able to be clicked*/}
+            {isHost && <StartButton label='START GAME' allReady={allReady} />}
+        </div>
+      </div>
+    </>
   );
 };
 
