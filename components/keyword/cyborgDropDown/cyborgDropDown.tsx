@@ -5,11 +5,10 @@ import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 
+// make it based on user length.
 const options = [
     "1",
-    "2",
-    "3",
-    "RANDOMISE"
+    "RANDOM"
 ];
 
 export default function CyborgDropDown({ onSelect }: { onSelect: (category: string) => void }) {

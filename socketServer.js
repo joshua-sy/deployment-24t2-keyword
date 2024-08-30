@@ -90,7 +90,18 @@ function initializeSocketServer(server) {
       }
     });
 
+    socket.on('check-room-exist', (roomCode, callback) => {
+      if (!rooms[roomCode]) {
+        callback({ error: `Room ${roomCode} does not exist.` });
+      } else {
+        return;
+      }
+    });
+
     socket.on('leave-room', (roomCode, userId) => {
+        if (!rooms[roomCode] || !rooms[roomCode].users) {
+            return;
+        }
         const userIndex = rooms[roomCode].users.findIndex(user => user.uid === userId);
         socket.leave(roomCode);
         console.log(`${userId} left room: ${roomCode}`);

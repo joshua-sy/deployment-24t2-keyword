@@ -15,7 +15,8 @@ const options = [
   "ATHLETES",
   "ANIMALS",
   "LOCATIONS",
-  "CUSTOM"
+  "CUSTOM",
+  "RANDOM"
 ];
 
 export default function CategoryDropDown({ onSelect }: { onSelect: (category: string) => void }) {

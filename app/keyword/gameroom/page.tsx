@@ -7,6 +7,7 @@ import { io } from 'socket.io-client';
 import CategoryDropDown from '@/components/keyword/categoryDropDown/categoryDropDown';
 import CyborgDropDown from '@/components/keyword/cyborgDropDown/cyborgDropDown';
 import TimeDropDown from '@/components/keyword/timeDropDown/timeDropDown';
+import StartButton from '@/components/keyword/startButton/startButton';
 import PlayerBoard from '@/components/keyword/playerBoard/playerBoard';
 
 const socket = io('http://localhost:4000');
@@ -22,7 +23,8 @@ const GameRoom = ({
   const [userId, setUserId] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const roomCode = searchParams.roomCode;
-  const userAction = localStorage.getItem('isHost');
+  const [isHost, setIsHost] = useState<boolean>(false);
+  const [allReady, setAllReady] = useState<boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('CELEBRITIES');
   const [selectedCyborg, setSelectedCyborg] = useState<string>('1');
   const [selectedTime, setSelectedTime] = useState<string>('4 min');
@@ -32,6 +34,16 @@ const GameRoom = ({
       setUsers(usersInRoom);
     });
   };
+
+  const countReady = () => {
+    let count = 0;
+    users.forEach((user) => {
+      if (user.readyStatus) {
+        count++;
+      }
+    });
+    return count;
+  }
 
   const handleCategorySelect = (value: string) => {
     setSelectedCategory(value);
@@ -48,18 +60,49 @@ const GameRoom = ({
     console.log('Selected time:', value);
   };
 
+  const findNewHost = () => {
+    console.log(users);
+    for (let user of users) {
+      console.log(`${user.username}`);
+      if (!user.isHost) {
+        console.log(`${user.username} is now the host`);
+        user.isHost = true;
+        socket.emit("update-room", users);
+        break;
+      }
+    }
+  }
+
   useEffect(() => {
     // Fetch username and userId from localStorage
+    const isHost = localStorage.getItem('isHost') === 'true' ? true : false;
     const storedUsername = localStorage.getItem('username');
     const storedUserId = localStorage.getItem('userId');
     setUsername(storedUsername);
     setUserId(storedUserId);
+    setIsHost(isHost);
   }, []);
 
   useEffect(() => {
+    if (countReady() === users.length) {
+      setAllReady(true);
+    } else {
+      setAllReady(false);
+    }
+  }, [users]);
+
+  useEffect(() => {
     if (roomCode && username && userId) {
-      if (userAction === 'true') {
+      if (isHost) {
         socket.emit('create-room', username, userId, roomCode);
+      } else {
+        socket.emit("check-room-exist", roomCode, (returnMessage: any) => {
+          if (returnMessage.error && !isHost) {
+            alert(returnMessage.error);
+            window.history.back();
+            return;
+          }
+        });
       }
 
       socket?.emit('join-room', roomCode, username, userId, (usersInRoom: any) => {
@@ -79,6 +122,12 @@ const GameRoom = ({
 
       return () => {
         socket.emit('leave-room', roomCode, userId);
+        console.log("LEAVING G");
+        console.log(users);
+        // if (isHost) {
+        //   console.log("HELLO");
+        //   findNewHost();
+        // }
         socket.off('update-room', handleUpdateRoom);
       };
     }
@@ -103,6 +152,8 @@ const GameRoom = ({
             </ul>
             <PlayerBoard users={users}/>
             <RedButton onClick={() => {userId && handleReady(roomCode, userId)}} label='READY UP'/>
+            {/*make it so that once all are ready then able to be clicked*/}
+            {isHost && <StartButton label='START GAME' allReady={allReady} />}
         </div>
       </div>
     </>
