@@ -123,11 +123,12 @@ export default function Home() {
 
         {/* The game rules are shown once the 'HOW TO PLAY' button is clicked */}
         {showRules && (
-          <div className="absolute inset-0 backdrop-blur-sm">
-            <div className="rulesContainer fixed bottom-0 w-full max-w-xl mx-auto h-[65vh] sm:h-[70vh] bg-[#0C2820] z-10 border-[10px] border-black rounded-tl-3xl rounded-tr-3xl animate-slide-up">
-              <Rules title="HOW TO PLAY" content={howToPlayContent} onClose={handleHideRules} />
-            </div>
-          </div>
+          // <div className="absolute inset-0 backdrop-blur-sm">
+          //   <div className="rulesContainer fixed bottom-0 w-full max-w-xl mx-auto h-[65vh] sm:h-[70vh] bg-[#0C2820] z-10 border-[10px] border-black rounded-tl-3xl rounded-tr-3xl animate-slide-up">
+          //     <Rules title="HOW TO PLAY" content={howToPlayContent} onClose={handleHideRules} />
+          //   </div>
+          // </div>
+          <PlayerIdentity />
         )}
       </div >
     </>
