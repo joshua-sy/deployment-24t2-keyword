@@ -9,6 +9,7 @@ import CyborgDropDown from '@/components/keyword/cyborgDropDown/cyborgDropDown';
 import TimeDropDown from '@/components/keyword/timeDropDown/timeDropDown';
 import StartButton from '@/components/keyword/startButton/startButton';
 import PlayerBoard from '@/components/keyword/playerBoard/playerBoard';
+import { useRouter } from "next/navigation";
 
 const socket = io('http://localhost:4000');
 
@@ -19,6 +20,7 @@ const GameRoom = ({
     roomCode: String;
   };
 }) => {
+  const router = useRouter();
   const [users, setUsers] = useState<{ username: string; isHost: boolean; readyStatus: boolean; }[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
@@ -30,6 +32,7 @@ const GameRoom = ({
   const [selectedTime, setSelectedTime] = useState<string>('4 min');
 
   const handleReady = (roomCode: String, userId: string) => {
+    console.log('handle ready function ', roomCode, userId)
     socket.emit('update-ready', roomCode, userId, (usersInRoom: any) => {
       setUsers(usersInRoom);
     });
@@ -78,6 +81,7 @@ const GameRoom = ({
     const isHost = localStorage.getItem('isHost') === 'true' ? true : false;
     const storedUsername = localStorage.getItem('username');
     const storedUserId = localStorage.getItem('userId');
+    console.log('storeUserId is ', storedUserId)
     setUsername(storedUsername);
     setUserId(storedUserId);
     setIsHost(isHost);
@@ -120,6 +124,11 @@ const GameRoom = ({
 
       socket.on('update-room', handleUpdateRoom);
 
+      const handleGameStart = () => {
+        router.push(`/keyword/round?roomCode=${roomCode}`);
+      }
+      socket.on('game-start', handleGameStart)
+
       return () => {
         socket.emit('leave-room', roomCode, userId);
         console.log("LEAVING G");
@@ -132,6 +141,11 @@ const GameRoom = ({
       };
     }
   }, [roomCode, username, userId]);
+
+  const signalAllReady = () => {
+    // router.push(`/keyword/round?roomCode=${roomCode}`);
+    socket.emit('all-ready', roomCode, userId);
+  }
 
   return (
     <>
@@ -153,7 +167,7 @@ const GameRoom = ({
             <PlayerBoard users={users}/>
             <RedButton onClick={() => {userId && handleReady(roomCode, userId)}} label='READY UP'/>
             {/*make it so that once all are ready then able to be clicked*/}
-            {isHost && <StartButton label='START GAME' allReady={allReady} />}
+            {isHost && <StartButton label='START GAME' allReady={allReady} onClick={signalAllReady} />}
         </div>
       </div>
     </>

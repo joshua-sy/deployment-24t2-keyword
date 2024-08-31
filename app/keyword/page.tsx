@@ -59,10 +59,13 @@ export default function Home() {
   };
 
   const handleJoin = (roomCode: string, name: string) => {
+    const userId = uuidv4(); // Generate a unique user ID
     setRoomCodeToCheck(roomCode);
     setName(name);
     localStorage.setItem('isHost', "false");
     localStorage.setItem('username', name);
+    localStorage.setItem('userId', userId);
+
   }
 
   useEffect(() => {

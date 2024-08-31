@@ -6,6 +6,7 @@ interface User {
   username: string;
   isHost: boolean;
   readyStatus: boolean;
+  roundLoaded: boolean;
 }
 
 interface PlayerBoardProps {
