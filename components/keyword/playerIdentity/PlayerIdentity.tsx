@@ -20,7 +20,7 @@ export default function PlayerIdentity() {
 
   DENY BEING THE CYBORG [red]AT ALL COST[/red].
   `;
-  const identity = "CYBORG";
+  const identity = "SCIENTIST";
   let identityImage = "./icons/scientistIcon.png";
   let identityText = "A SCIENTIST";
   let displayedWord = "WORD: CAPYBARA";
@@ -41,9 +41,11 @@ export default function PlayerIdentity() {
   const handleHideClick = () => {
     setIsHidden(!isHidden);
   };
+
   const handleShowRules = () => {
     setShowRules(true);
   };
+
   const handleHideRules = () => {
     setShowRules(false);
   };

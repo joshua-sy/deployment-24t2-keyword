@@ -7,7 +7,6 @@ import { io, Socket } from 'socket.io-client';
 import { DefaultEventsMap } from '@socket.io/component-emitter';
 import { v4 as uuidv4 } from 'uuid';
 import FormModal from "@/components/keyword/FormModal/FormModal";
-import PlayerIdentity from "@/components/keyword/playerIdentity/PlayerIdentity";
 import HostRoomModal from "@/components/keyword/HostRoomModal/HostRoomModal";
 import Rules from "@/components/keyword/rules/Rules";
 
@@ -43,6 +42,7 @@ export default function Home() {
   const handleShowRules = () => {
     setShowRules(true);
   };
+
   const handleHideRules = () => {
     setShowRules(false);
   };
@@ -123,12 +123,11 @@ export default function Home() {
 
         {/* The game rules are shown once the 'HOW TO PLAY' button is clicked */}
         {showRules && (
-          // <div className="absolute inset-0 backdrop-blur-sm">
-          //   <div className="rulesContainer fixed bottom-0 w-full max-w-xl mx-auto h-[65vh] sm:h-[70vh] bg-[#0C2820] z-10 border-[10px] border-black rounded-tl-3xl rounded-tr-3xl animate-slide-up">
-          //     <Rules title="HOW TO PLAY" content={howToPlayContent} onClose={handleHideRules} />
-          //   </div>
-          // </div>
-          <PlayerIdentity />
+          <div className="absolute inset-0 backdrop-blur-sm">
+            <div className="rulesContainer fixed bottom-0 w-full max-w-xl mx-auto h-[65vh] sm:h-[70vh] bg-[#0C2820] z-10 border-[10px] border-black rounded-tl-3xl rounded-tr-3xl animate-slide-up">
+              <Rules title="HOW TO PLAY" content={howToPlayContent} onClose={handleHideRules} />
+            </div>
+          </div>
         )}
       </div >
     </>
