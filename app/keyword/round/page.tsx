@@ -102,14 +102,14 @@ const GameRoom = ({
         <div className="contentContainer text-center w-[500px] mx-auto">
           <h1>Round</h1>
             <p>CODE: {roomCode}</p>
-            <h1>{countdown}</h1>
-            <ul>
+            <h1>TIME LEFT: {countdown}</h1>
+            {/* <ul>
               {users.map((user, index) => (
                 <li key={index}>
                   {user.username} {user.isHost && "(Host)"} {!user.roundLoaded && "Not"} {"Ready"}
                 </li>
               ))}
-            </ul>
+            </ul> */}
             <PlayerBoard users={users}/>
         </div>
       </div>

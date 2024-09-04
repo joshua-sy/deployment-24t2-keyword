@@ -21,7 +21,7 @@ const GameRoom = ({
   };
 }) => {
   const router = useRouter();
-  const [users, setUsers] = useState<{ username: string; isHost: boolean; readyStatus: boolean; }[]>([]);
+  const [users, setUsers] = useState<{ username: string; isHost: boolean; readyStatus: boolean; roundLoaded: boolean}[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const roomCode = searchParams.roomCode;
@@ -127,6 +127,7 @@ const GameRoom = ({
       const handleGameStart = () => {
         router.push(`/keyword/round?roomCode=${roomCode}`);
       }
+      
       socket.on('game-start', handleGameStart)
 
       return () => {
@@ -153,17 +154,9 @@ const GameRoom = ({
         <div className="contentContainer text-center w-[500px] mx-auto">
           <h1>Welcome to the Game Room</h1>
             <p>CODE: {roomCode}</p>
-            <CategoryDropDown onSelect={handleCategorySelect}/>
-            <CyborgDropDown onSelect={handleCyborgSelect}/>
-            <TimeDropDown onSelect={handleTimeSelect}/>
-            <p>list of users:</p>
-            <ul>
-              {users.map((user, index) => (
-                <li key={index}>
-                  {user.username} {user.isHost && "(Host)"} {!user.readyStatus && "Not"} {"Ready"}
-                </li>
-              ))}
-            </ul>
+            {isHost && <CategoryDropDown onSelect={handleCategorySelect}/>}
+            {isHost && <CyborgDropDown onSelect={handleCyborgSelect}/>}
+            {isHost && <TimeDropDown onSelect={handleTimeSelect}/>}
             <PlayerBoard users={users}/>
             <RedButton onClick={() => {userId && handleReady(roomCode, userId)}} label='READY UP'/>
             {/*make it so that once all are ready then able to be clicked*/}
