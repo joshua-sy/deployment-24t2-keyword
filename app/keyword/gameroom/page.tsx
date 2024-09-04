@@ -128,6 +128,8 @@ const GameRoom = ({
         router.push(`/keyword/round?roomCode=${roomCode}`);
       }
       
+      console.log("HEYYAWYDA");
+      
       socket.on('game-start', handleGameStart)
 
       return () => {
@@ -145,7 +147,9 @@ const GameRoom = ({
 
   const signalAllReady = () => {
     // router.push(`/keyword/round?roomCode=${roomCode}`);
-    socket.emit('all-ready', roomCode, userId);
+    if (allReady) {
+      socket.emit('all-ready', roomCode, userId);
+    }
   }
 
   return (
