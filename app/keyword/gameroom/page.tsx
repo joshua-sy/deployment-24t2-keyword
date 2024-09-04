@@ -30,6 +30,8 @@ const GameRoom = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('CELEBRITIES');
   const [selectedCyborg, setSelectedCyborg] = useState<string>('1');
   const [selectedTime, setSelectedTime] = useState<string>('4 min');
+  const [isNavigating, setIsNavigating] = useState(false);
+
 
   const handleReady = (roomCode: String, userId: string) => {
     console.log('handle ready function ', roomCode, userId)
@@ -133,9 +135,10 @@ const GameRoom = ({
       socket.on('game-start', handleGameStart)
 
       return () => {
-        socket.emit('leave-room', roomCode, userId);
-        console.log("LEAVING G");
-        console.log(users);
+        if (!isNavigating) {
+          socket.emit('leave-room', roomCode, userId);
+          console.log("LEAVING G");
+        }
         // if (isHost) {
         //   console.log("HELLO");
         //   findNewHost();
@@ -148,6 +151,7 @@ const GameRoom = ({
   const signalAllReady = () => {
     // router.push(`/keyword/round?roomCode=${roomCode}`);
     if (allReady) {
+      setIsNavigating(true);
       socket.emit('all-ready', roomCode, userId);
     }
   }
