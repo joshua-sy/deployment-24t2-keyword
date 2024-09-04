@@ -10,6 +10,7 @@ import TimeDropDown from '@/components/keyword/timeDropDown/timeDropDown';
 import StartButton from '@/components/keyword/startButton/startButton';
 import PlayerBoard from '@/components/keyword/playerBoard/playerBoard';
 import { useRouter } from "next/navigation";
+import Button from '@mui/material/Button';
 
 const socket = io('http://localhost:4000');
 
@@ -17,7 +18,7 @@ const GameRoom = ({
   searchParams
 }: {
   searchParams: {
-    roomCode: String;
+    roomCode: string;
   };
 }) => {
   const router = useRouter();
@@ -156,18 +157,29 @@ const GameRoom = ({
     }
   }
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(roomCode).then(() => {
+      alert(`Room code copied: ${roomCode}`);
+    }).catch((err) => {
+      console.error('Failed to copy: ', err);
+    });
+  };
+
   return (
     <>
       <div className="backgroundDiv h-screen bg-cover bg-center" style={{ backgroundImage: 'url(/robotBackground.png)' }}>
         <div className="contentContainer text-center w-[500px] mx-auto">
-          <h1>Welcome to the Game Room</h1>
-            <p>CODE: {roomCode}</p>
+          <h1 className='text-white'>Welcome to the Game Room</h1>
+            <p className='text-white'>CODE: {roomCode}</p>
+            <RedButton 
+            label = 'COPY CODE'
+            onClick={handleCopy} 
+            />
             {isHost && <CategoryDropDown onSelect={handleCategorySelect}/>}
             {isHost && <CyborgDropDown onSelect={handleCyborgSelect}/>}
             {isHost && <TimeDropDown onSelect={handleTimeSelect}/>}
             <PlayerBoard users={users}/>
             <RedButton onClick={() => {userId && handleReady(roomCode, userId)}} label='READY UP'/>
-            {/*make it so that once all are ready then able to be clicked*/}
             {isHost && <StartButton label='START GAME' allReady={allReady} onClick={signalAllReady} />}
         </div>
       </div>
