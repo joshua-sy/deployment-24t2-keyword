@@ -63,8 +63,30 @@ const GameRoom = ({
 
   const handleTimeSelect = (value: string) => {
     setSelectedTime(value);
+    console.log('CURR VALUES', {
+      roomCode,
+      selectedCategory,
+      selectedCyborg,
+      selectedTime
+    });
     console.log('Selected time:', value);
   };
+
+  // Listen for updates to the room's user list
+  const handleUpdateRoom = (usersInRoom: any) => {
+    setUsers(usersInRoom);
+  };
+  
+  const handleGameStart = () => {
+    console.log('Navigating with:', {
+      roomCode,
+      selectedCategory,
+      selectedCyborg,
+      selectedTime
+    });
+    router.push(`/keyword/round?roomCode=${roomCode}&category=${selectedCategory}&cyborg=${selectedCyborg}&time=${selectedTime}`);
+    // router.push(`/keyword/round?roomCode=${roomCode}`);
+  }
 
   const findNewHost = () => {
     console.log(users);
@@ -120,18 +142,8 @@ const GameRoom = ({
         setUsers(usersInRoom);
       });
 
-      // Listen for updates to the room's user list
-      const handleUpdateRoom = (usersInRoom: any) => {
-        setUsers(usersInRoom);
-      };
-
       socket.on('update-room', handleUpdateRoom);
 
-      const handleGameStart = () => {
-        router.push(`/keyword/round?roomCode=${roomCode}`);
-      }
-      
-      console.log("HEYYAWYDA");
       
       socket.on('game-start', handleGameStart)
 

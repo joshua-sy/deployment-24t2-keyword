@@ -14,16 +14,27 @@ const GameRoom = ({
   searchParams
 }: {
   searchParams: {
-    roomCode: String;
+    roomCode: string;
+    category: string;
+    cyborg: string;
+    time: string;
   };
 }) => {
   const router = useRouter();
+  const roomCode = searchParams.roomCode;
+  const category = searchParams.category;
+  const cyborg = searchParams.cyborg;
+  const time = searchParams.time;
+  console.log('roomCode is ', roomCode);
+  console.log('category is ', category);
+  console.log('cyborg is ', cyborg);
+  console.log('time is ', time);
   const [users, setUsers] = useState<{
     roundLoaded: boolean; username: string; isHost: boolean; readyStatus: boolean; 
 }[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
-  const roomCode = searchParams.roomCode;
+  // const roomCode = searchParams.roomCode;
   const [isHost, setIsHost] = useState<boolean>(false);
   const [countdown, setCountdown] = useState(-1);
 
@@ -44,26 +55,7 @@ const GameRoom = ({
  
 
   useEffect(() => {
-    if (roomCode && username && userId) {
-      socket.emit("check-room-exist", roomCode, (returnMessage: any) => {
-        // If it can't find a room, then room does not exist.
-        if (returnMessage.error && !isHost) {
-          alert(returnMessage.error);
-          // Send them back to the home page
-          router.push(`/keyword`);
-          return;
-        }
-      });
-      
-      // If room exist, join the room
-      socket?.emit('join-room', roomCode, username, userId, (usersInRoom: any) => {
-        if (usersInRoom.error) {
-          alert(usersInRoom.error);
-          return;
-        }
-        setUsers(usersInRoom);
-      });
-
+    if (roomCode && username && userId) {   
       socket?.emit('player-loaded-round', roomCode, userId, (newCountdown: any) => {
         if (newCountdown.error) {
           alert(newCountdown.error);
