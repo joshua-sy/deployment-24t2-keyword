@@ -98,7 +98,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="backgroundDiv h-screen bg-cover bg-center" style={{ backgroundImage: 'url(/robotBackground.png)' }}>
+      <div className="backgroundDiv bg-robot bg-cover h-screen bg-center-left-10px" >
         {/* Width is fixed to 500 pixels for now */}
         <div className={`contentContainer text-center w-[500px] mx-auto transition-all duration-500 ease-in-out 
           ${showRules ? 'opacity-0 translate-y-10' : 'opacity-100 translate-y-0'}`}>

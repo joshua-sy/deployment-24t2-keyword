@@ -12,6 +12,10 @@ const config: Config = {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+        'robot': "url('/robotBackground.png')",
+      },
+      backgroundPosition: {
+        'center-left-10px': 'calc(50% - 20px) center',
       },
       colors: {
         'figma-red': '#E04E4E',
