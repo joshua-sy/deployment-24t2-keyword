@@ -10,7 +10,7 @@ import TimeDropDown from '@/components/keyword/timeDropDown/timeDropDown';
 import StartButton from '@/components/keyword/startButton/startButton';
 import PlayerBoard from '@/components/keyword/playerBoard/playerBoard';
 import { useRouter } from "next/navigation";
-import Button from '@mui/material/Button';
+import { useRef } from 'react';
 
 const socket = io('http://localhost:4000');
 
@@ -33,6 +33,11 @@ const GameRoom = ({
   const [selectedTime, setSelectedTime] = useState<string>('4 min');
   const [isNavigating, setIsNavigating] = useState(false);
 
+  const selectedValuesRef = useRef({ selectedCategory, selectedCyborg, selectedTime });
+
+  useEffect(() => {
+    selectedValuesRef.current = { selectedCategory, selectedCyborg, selectedTime };
+  }, [selectedCategory, selectedCyborg, selectedTime]);
 
   const handleReady = (roomCode: String, userId: string) => {
     console.log('handle ready function ', roomCode, userId)
@@ -72,6 +77,10 @@ const GameRoom = ({
     console.log('Selected time:', value);
   };
 
+  useEffect(() => {
+    console.log('Updated state:', { selectedCategory, selectedCyborg, selectedTime });
+  }, [selectedCategory, selectedCyborg, selectedTime]);
+  
   // Listen for updates to the room's user list
   const handleUpdateRoom = (usersInRoom: any) => {
     setUsers(usersInRoom);
@@ -80,11 +89,9 @@ const GameRoom = ({
   const handleGameStart = () => {
     console.log('Navigating with:', {
       roomCode,
-      selectedCategory,
-      selectedCyborg,
-      selectedTime
+      ...selectedValuesRef.current
     });
-    router.push(`/keyword/round?roomCode=${roomCode}&category=${selectedCategory}&cyborg=${selectedCyborg}&time=${selectedTime}`);
+    router.push(`/keyword/round?roomCode=${roomCode}&category=${selectedValuesRef.current.selectedCategory}&cyborg=${selectedValuesRef.current.selectedCyborg}&time=${selectedValuesRef.current.selectedTime}`);
     // router.push(`/keyword/round?roomCode=${roomCode}`);
   }
 
@@ -156,6 +163,7 @@ const GameRoom = ({
         //   console.log("HELLO");
         //   findNewHost();
         // }
+        socket.off('game-start', handleGameStart);
         socket.off('update-room', handleUpdateRoom);
       };
     }

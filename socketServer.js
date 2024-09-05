@@ -164,9 +164,6 @@ function initializeSocketServer(server) {
       rooms[roomCode].gameStart = true;
       ioInstance.to(roomCode).emit('game-start');
     });
-
-
-
   });
 
   console.log('Socket.IO server initialized');
