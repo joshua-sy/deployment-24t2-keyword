@@ -1,9 +1,9 @@
 let ioInstance;
 let rooms = {};
 
-const generateRandomWord = require('./server');
 
 function initializeSocketServer(server) {
+
   if (ioInstance) return ioInstance;
 
   const { Server } = require('socket.io');
@@ -73,25 +73,26 @@ function initializeSocketServer(server) {
       updateReady(roomCode, userId);
     });
 
-    // socket.on('disconnect', () => {
-    //   console.log('disconnect is called')
-    //   for (const roomCode in rooms) {
-    //     const userIndex = rooms[roomCode].users.findIndex(user => user.socket === socket.id);
-    //     if (userIndex !== -1) {
-    //         rooms[roomCode].users.splice(userIndex, 1);
+    socket.on('disconnect', () => {
+      console.log('disconnect is called')
+      for (const roomCode in rooms) {
+        const userIndex = rooms[roomCode].users.findIndex(user => user.socket === socket.id);
+        if (userIndex !== -1) {
+            rooms[roomCode].users.splice(userIndex, 1);
 
-    //         ioInstance.to(roomCode).emit('update-room', userMap(roomCode));
+            ioInstance.to(roomCode).emit('update-room', userMap(roomCode));
 
 
-    //         if (rooms[roomCode].users.length === 0) {
-    //             delete rooms[roomCode];
-    //             console.log(`Room ${roomCode} deleted as it is now empty.`);
-    //         }
+            if (rooms[roomCode].users.length === 0) {
+              clearInterval(rooms[roomCode].intervalId);
+              delete rooms[roomCode];
+              console.log(`Room ${roomCode} deleted as it is now empty.`);
+            }
 
-    //         break;
-    //     }       
-    //   }
-    // });
+            break;
+        }       
+      }
+    });
 
     socket.on('check-room-exist', (roomCode, callback) => {
       if (!rooms[roomCode]) {
@@ -121,6 +122,7 @@ function initializeSocketServer(server) {
 
             // If the room is empty, delete it
             if (rooms[roomCode].users.length === 0) {
+                clearInterval(rooms[roomCode].intervalId);
                 delete rooms[roomCode];
                 console.log(`Room ${roomCode} deleted as it is now empty.`);
             }
@@ -138,9 +140,9 @@ function initializeSocketServer(server) {
         let intervalId = null
         if (allUsersLoaded) {
           intervalId = setInterval(() => {
-            if (rooms[roomCode].timer > 0) {
+            if (rooms[roomCode] && rooms[roomCode].timer > 0) {
               rooms[roomCode].timer--;
-              console.log('timer is now',  rooms[roomCode].timer);
+              // console.log('timer is now',  rooms[roomCode].timer);
               ioInstance.to(roomCode).emit('countdown-update', rooms[roomCode].timer);
             } else {
               // clear the interval once it reaches 0
@@ -152,7 +154,7 @@ function initializeSocketServer(server) {
         }
         // store the interval ID for the room.
         rooms[roomCode].intervalId = intervalId
-        
+        console.log("LOADED ONE USER", userId);
       }
     });
 
@@ -168,8 +170,15 @@ function initializeSocketServer(server) {
     });
 
     socket.on('get-word', (roomCode, categoryName) => {
-      // const word = generateRandomWord(categoryName);
-      // ioInstance.to(roomCode).emit('word-generated', word);
+      const generateRandomWord = require('./server');
+      generateRandomWord(categoryName, (err, word) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        console.log('word generated is ', word)
+        ioInstance.to(roomCode).emit('word-generated', word);
+      });
     });
   });
 

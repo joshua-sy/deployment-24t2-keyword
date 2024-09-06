@@ -3,7 +3,14 @@ import RedButton from "../redButton/RedButton";
 import Rules from "@/components/keyword/rules/Rules";
 
 // need timer, player identity, word and category
-export default function PlayerIdentity() {
+interface PlayerIdentityProps {
+  timer: number;
+  identity: string;
+  word: string;
+  category: string;
+}
+
+export default function PlayerIdentity({timer, identity, word, category}: PlayerIdentityProps) {
   const scientistRuleContent = `
   EVERYBODY TAKES TURNS SAYING A WORD CORRELATING TO THE WORD GIVEN.
 
@@ -20,20 +27,19 @@ export default function PlayerIdentity() {
 
   DENY BEING THE CYBORG [red]AT ALL COST[/red].
   `;
-  const identity = "SCIENTIST";
-  let identityImage = "./icons/scientistIcon.png";
+
+  let identityImage = "/icons/scientistIcon.png";
   let identityText = "A SCIENTIST";
-  let displayedWord = "WORD: CAPYBARA";
+  let displayedWord = `WORD: ${word}`;
   if (identity !== "SCIENTIST") {
-    identityImage = "./icons/robotIcon.png";
+    identityImage = "/icons/robotIcon.png";
     identityText = "THE CYBORG";
     displayedWord = "CATEGORY: ANIMALS";
   }
 
   const [isHidden, setIsHidden] = useState(false);
   const [showRules, setShowRules] = useState(false);
-
-  const currentImage = isHidden ? "./icons/questionMarkIcon.png" : identityImage;
+  const currentImage = isHidden ? "/icons/questionMarkIcon.png" : identityImage;
   const profileText = isHidden ? "REVEAL PROFILE" : "HIDE PROFILE";
   const currentText = isHidden ? "?????????" : identityText;
   const wordText = isHidden ? "CATEGORY: ANIMALS" : displayedWord;
@@ -58,8 +64,8 @@ export default function PlayerIdentity() {
           <div className="flex flex-col items-center justify-center text-white text-center font-bold">
             <div className="timeLeftContainer mt-4 p-4 border-[3px] border-black rounded-lg bg-[#289773] bg-opacity-70 w-[280px] p-3">
               <div className="flex items-center space-x-2">
-                <h2 className="text-2xl">TIME LEFT: 00:00</h2>
-                <img src="./icons/clockIcon.png" alt="Clock Icon" className="w-5 h-5" />
+                <h2 className="text-2xl">TIME LEFT: {timer}</h2>
+                <img src="/icons/clockIcon.png" alt="Clock Icon" className="w-5 h-5" />
               </div>
             </div>
             <div className="pictureContainer mt-4 border-[5px] border-black rounded-[20px] w-[280px] h-[280px] 

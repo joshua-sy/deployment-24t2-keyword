@@ -41,4 +41,4 @@ function generateRandomWord(categoryName, callback) {
   });
 }
 
-module.exports = generateRandomWord
+module.exports = generateRandomWord;
