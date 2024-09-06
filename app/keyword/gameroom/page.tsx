@@ -91,6 +91,7 @@ const GameRoom = ({
       roomCode,
       ...selectedValuesRef.current
     });
+    setIsNavigating(true);
     router.push(`/keyword/round?roomCode=${roomCode}&category=${selectedValuesRef.current.selectedCategory}&cyborg=${selectedValuesRef.current.selectedCyborg}&time=${selectedValuesRef.current.selectedTime}`);
     // router.push(`/keyword/round?roomCode=${roomCode}`);
   }
@@ -157,7 +158,7 @@ const GameRoom = ({
       return () => {
         if (!isNavigating) {
           socket.emit('leave-room', roomCode, userId);
-          console.log("LEAVING G");
+          console.log("LEAVING PEEE");
         }
         // if (isHost) {
         //   console.log("HELLO");

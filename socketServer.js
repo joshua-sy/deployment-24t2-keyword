@@ -1,6 +1,8 @@
 let ioInstance;
 let rooms = {};
 
+const generateRandomWord = require('./server');
+
 function initializeSocketServer(server) {
   if (ioInstance) return ioInstance;
 
@@ -71,25 +73,25 @@ function initializeSocketServer(server) {
       updateReady(roomCode, userId);
     });
 
-    socket.on('disconnect', () => {
-      console.log('disconnect is called')
-      for (const roomCode in rooms) {
-        const userIndex = rooms[roomCode].users.findIndex(user => user.socket === socket.id);
-        if (userIndex !== -1) {
-            rooms[roomCode].users.splice(userIndex, 1);
+    // socket.on('disconnect', () => {
+    //   console.log('disconnect is called')
+    //   for (const roomCode in rooms) {
+    //     const userIndex = rooms[roomCode].users.findIndex(user => user.socket === socket.id);
+    //     if (userIndex !== -1) {
+    //         rooms[roomCode].users.splice(userIndex, 1);
 
-            ioInstance.to(roomCode).emit('update-room', userMap(roomCode));
+    //         ioInstance.to(roomCode).emit('update-room', userMap(roomCode));
 
 
-            if (rooms[roomCode].users.length === 0) {
-                delete rooms[roomCode];
-                console.log(`Room ${roomCode} deleted as it is now empty.`);
-            }
+    //         if (rooms[roomCode].users.length === 0) {
+    //             delete rooms[roomCode];
+    //             console.log(`Room ${roomCode} deleted as it is now empty.`);
+    //         }
 
-            break;
-}       
-      }
-    });
+    //         break;
+    //     }       
+    //   }
+    // });
 
     socket.on('check-room-exist', (roomCode, callback) => {
       if (!rooms[roomCode]) {
@@ -164,7 +166,14 @@ function initializeSocketServer(server) {
       rooms[roomCode].gameStart = true;
       ioInstance.to(roomCode).emit('game-start');
     });
+
+    socket.on('get-word', (roomCode, categoryName) => {
+      // const word = generateRandomWord(categoryName);
+      // ioInstance.to(roomCode).emit('word-generated', word);
+    });
   });
+
+
 
   console.log('Socket.IO server initialized');
   return ioInstance;

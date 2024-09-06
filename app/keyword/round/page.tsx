@@ -20,7 +20,6 @@ const GameRoom = ({
     time: string;
   };
 }) => {
-  const router = useRouter();
   const roomCode = searchParams.roomCode;
   const category = searchParams.category;
   const cyborg = searchParams.cyborg;
@@ -29,6 +28,7 @@ const GameRoom = ({
   console.log('category is ', category);
   console.log('cyborg is ', cyborg);
   console.log('time is ', time);
+
   const [users, setUsers] = useState<{
     roundLoaded: boolean; username: string; isHost: boolean; readyStatus: boolean; 
 }[]>([]);
@@ -37,7 +37,6 @@ const GameRoom = ({
   // const roomCode = searchParams.roomCode;
   const [isHost, setIsHost] = useState<boolean>(false);
   const [countdown, setCountdown] = useState(-1);
-
 
 
 
@@ -50,6 +49,12 @@ const GameRoom = ({
     setUsername(storedUsername);
     setUserId(storedUserId);
     setIsHost(isHost);
+
+    socket.emit('get-word', roomCode, category.toLowerCase());
+
+    socket.on('word-generated', (word: string) => {
+      console.log('word is ', word);
+    });
   }, []);
 
  
@@ -76,8 +81,8 @@ const GameRoom = ({
       });
 
       return () => {
-        socket.emit('leave-room', roomCode, userId);
-        console.log("LEAVING G");
+        // socket.emit('leave-room', roomCode, userId);
+        // console.log("LEAVING GANG");
         console.log(users);
         // if (isHost) {
         //   console.log("HELLO");
@@ -92,8 +97,6 @@ const GameRoom = ({
     <>
       <div className="backgroundDiv h-screen bg-cover bg-center" style={{ backgroundImage: 'url(/robotBackground.png)' }}>
         <div className="contentContainer text-center w-[500px] mx-auto">
-          <h1>Round</h1>
-            <p>CODE: {roomCode}</p>
             <h1>TIME LEFT: {countdown}</h1>
             {/* <ul>
               {users.map((user, index) => (
