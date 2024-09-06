@@ -149,7 +149,7 @@ const GameRoom = ({
 
   return (
     <>
-      <div className="backgroundDiv h-screen bg-cover bg-center" style={{ backgroundImage: 'url(/robotBackground.png)' }}>
+      <div className="\backgroundDiv bg-robot bg-cover h-screen bg-center-left-px">
         <div className="contentContainer text-center w-[500px] mx-auto">
           <h1>Welcome to the Game Room</h1>
             <p>CODE: {roomCode}</p>

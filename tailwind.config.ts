@@ -15,7 +15,8 @@ const config: Config = {
         'robot': "url('/robotBackground.png')",
       },
       backgroundPosition: {
-        'center-left-10px': 'calc(50% - 20px) center',
+        'center-left-px': 'calc(50% - 25px) center',
+        'center-left-p': '53% center',
       },
       colors: {
         'figma-red': '#E04E4E',
