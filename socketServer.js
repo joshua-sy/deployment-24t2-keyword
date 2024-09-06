@@ -97,7 +97,7 @@ function initializeSocketServer(server) {
       if (!rooms[roomCode]) {
         callback({ error: `Room ${roomCode} does not exist.` });
       } else {
-        return;
+        callback({ success: `Room ${roomCode} exists.` });
       }
     });
 

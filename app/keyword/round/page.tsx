@@ -7,6 +7,7 @@ import { io } from 'socket.io-client';
 import { useRouter } from "next/navigation";
 import StartButton from '@/components/keyword/startButton/startButton';
 import PlayerBoard from '@/components/keyword/playerBoard/playerBoard';
+import router from 'next/router';
 
 const socket = io('http://localhost:4000');
 
@@ -61,6 +62,16 @@ const GameRoom = ({
 
   useEffect(() => {
     if (roomCode && username && userId) {   
+      socket.emit("check-room-exist", roomCode, (returnMessage: any) => {
+        // If it can't find a room, then room does not exist.
+        if (returnMessage.error && !isHost) {
+          alert(returnMessage.error);
+          // Send them back to the home page
+          router.push(`/keyword`);
+          return;
+        }
+      });
+
       socket?.emit('player-loaded-round', roomCode, userId, (newCountdown: any) => {
         if (newCountdown.error) {
           alert(newCountdown.error);
@@ -68,11 +79,19 @@ const GameRoom = ({
         }
       });
 
+      // If room exist, join the room
+      socket?.emit('join-room', roomCode, username, userId, (usersInRoom: any) => {
+        if (usersInRoom.error) {
+          alert(usersInRoom.error);
+          return;
+        }
+        setUsers(usersInRoom);
+      });
+
       // Listen for updates to the room's user list
       const handleUpdateRoom = (usersInRoom: any) => {
         setUsers(usersInRoom);
       };
-
 
       socket.on('update-room', handleUpdateRoom);
 

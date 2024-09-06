@@ -31,7 +31,7 @@ const GameRoom = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('CELEBRITIES');
   const [selectedCyborg, setSelectedCyborg] = useState<string>('1');
   const [selectedTime, setSelectedTime] = useState<string>('4 min');
-  const [isNavigating, setIsNavigating] = useState(false);
+  const isNavigatingRef = useRef(false);
 
   const selectedValuesRef = useRef({ selectedCategory, selectedCyborg, selectedTime });
 
@@ -91,7 +91,7 @@ const GameRoom = ({
       roomCode,
       ...selectedValuesRef.current
     });
-    setIsNavigating(true);
+    isNavigatingRef.current = true;
     router.push(`/keyword/round?roomCode=${roomCode}&category=${selectedValuesRef.current.selectedCategory}&cyborg=${selectedValuesRef.current.selectedCyborg}&time=${selectedValuesRef.current.selectedTime}`);
     // router.push(`/keyword/round?roomCode=${roomCode}`);
   }
@@ -156,7 +156,8 @@ const GameRoom = ({
       socket.on('game-start', handleGameStart)
 
       return () => {
-        if (!isNavigating) {
+        if (!isNavigatingRef.current) {
+          console.log("isnavigating: " + isNavigatingRef);
           socket.emit('leave-room', roomCode, userId);
           console.log("LEAVING PEEE");
         }
@@ -173,7 +174,7 @@ const GameRoom = ({
   const signalAllReady = () => {
     // router.push(`/keyword/round?roomCode=${roomCode}`);
     if (allReady) {
-      setIsNavigating(true);
+      isNavigatingRef.current = true;
       socket.emit('all-ready', roomCode, userId);
     }
   }
