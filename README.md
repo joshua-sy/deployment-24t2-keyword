@@ -1,9 +1,19 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+## How to run frontend
 
-First, run the development server:
+First, go into the frontend directory
 
+```bash
+cd frontend
+```
+Run npm install to install packages needed for the frontend
+
+```bash
+npm install
+```
+
+Then run one of the following commands to run the frontend. (Suggest to use npm run dev)
 ```bash
 npm run dev
 # or
@@ -14,17 +24,29 @@ pnpm dev
 bun dev
 ```
 
-Second, run the backend server while in the main directory:
-
-```bash
-node server.js
-```
-
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+
+
+## How to run the backend
+
+First, go into the backend directory:
+
+``` bash
+cd backend
+```
+Run npm install to install packages needed for the backend
+
+```bash
+npm install
+```
+Then run commands to run the backend.
+```bash
+node server.js
+```
 
 ## Learn More
 
