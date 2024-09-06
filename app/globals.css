@@ -41,18 +41,27 @@ body {
       transform: translateY(0);
       opacity: 1;
     }
-  }
+}
 
 .rulesContainer.animate-slide-up {
   animation: slide-up 0.5s ease-in-out;
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+  height: 65vh;
 }
 
 html, body {
     overflow-x: hidden;
     margin: 0;
     padding: 0;
-  }
+}
   
-  .absolute {
+.absolute {
     overflow: hidden;
-  }
+}
+
+.no-scroll {
+    overflow: hidden;
+    height: 100vh;
+}
