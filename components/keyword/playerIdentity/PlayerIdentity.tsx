@@ -31,10 +31,12 @@ export default function PlayerIdentity({timer, identity, word, category}: Player
   let identityImage = "/icons/scientistIcon.png";
   let identityText = "A SCIENTIST";
   let displayedWord = `WORD: ${word}`;
+  let howToPlayContent = scientistRuleContent;
   if (identity !== "SCIENTIST") {
     identityImage = "/icons/robotIcon.png";
     identityText = "THE CYBORG";
-    displayedWord = "CATEGORY: ANIMALS";
+    displayedWord = `CATEGORY: ${category}`;
+    howToPlayContent = cyborgRuleContent;
   }
 
   const [isHidden, setIsHidden] = useState(false);
@@ -42,7 +44,7 @@ export default function PlayerIdentity({timer, identity, word, category}: Player
   const currentImage = isHidden ? "/icons/questionMarkIcon.png" : identityImage;
   const profileText = isHidden ? "REVEAL PROFILE" : "HIDE PROFILE";
   const currentText = isHidden ? "?????????" : identityText;
-  const wordText = isHidden ? "CATEGORY: ANIMALS" : displayedWord;
+  const wordText = isHidden ? `CATEGORY: ${category}` : displayedWord;
 
   const handleHideClick = () => {
     setIsHidden(!isHidden);
@@ -89,7 +91,7 @@ export default function PlayerIdentity({timer, identity, word, category}: Player
       {showRules && (
         <div className="absolute inset-0 backdrop-blur-sm">
           <div className="rulesContainer fixed bottom-0 w-full max-w-xl mx-auto h-[65vh] sm:h-[70vh] bg-[#0C2820] z-10 border-[10px] border-black rounded-tl-3xl rounded-tr-3xl animate-slide-up">
-            <Rules title="HOW TO PLAY" content={cyborgRuleContent} onClose={handleHideRules} />
+            <Rules title="HOW TO PLAY" content={howToPlayContent} onClose={handleHideRules} />
           </div>
         </div>
       )}

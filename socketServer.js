@@ -22,7 +22,7 @@ function initializeSocketServer(server) {
         host: uid,
         users: [{ socket: socket.id, username, uid, readyStatus: false, roundLoaded: false }],
         gameStart: false,
-        timer: 240,
+        timer: 10,
         intervalId: null
       };
 
@@ -148,6 +148,7 @@ function initializeSocketServer(server) {
               // clear the interval once it reaches 0
               clearInterval(intervalId);
               ioInstance.to(roomCode).emit('countdown-update', rooms[roomCode].timer);
+              ioInstance.to(roomCode).emit('game-end');
               rooms[roomCode].intervalId = null;
             }
           }, 1000)
@@ -180,12 +181,31 @@ function initializeSocketServer(server) {
         ioInstance.to(roomCode).emit('word-generated', word);
       });
     });
+
+    socket.on('generate-identity', (roomCode, numCyborgs) => {
+      const users = rooms[roomCode].users;
+      const identities = Array(numCyborgs).fill('CYBORG');
+      const numScientists = users.length - numCyborgs;
+      identities.push(...Array(numScientists).fill('SCIENTIST'));
+      shuffleArray(identities);
+      for (let i = 0; i < users.length; i++) {
+        ioInstance.to(users[i].socket).emit('identity-generated', identities[i]);
+      }
+    });
   });
 
 
 
   console.log('Socket.IO server initialized');
   return ioInstance;
+}
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
 }
 
 function updateReady(roomCode, userId) {

@@ -7,6 +7,7 @@ import { io } from 'socket.io-client';
 import { useRouter } from "next/navigation";
 import router from 'next/router';
 import PlayerIdentity from '@/components/keyword/playerIdentity/PlayerIdentity';
+import RoundOver from '@/components/keyword/roundOver/RoundOver';
 import { useRef } from 'react';
 
 const socket = io('http://localhost:4000');
@@ -23,7 +24,7 @@ const GameRoom = ({
 }) => {
   const roomCode = searchParams.roomCode;
   const category = searchParams.category;
-  const cyborg = searchParams.cyborg;
+  const numCyborgs = searchParams.cyborg;
   const time = searchParams.time;
 
   const [users, setUsers] = useState<{
@@ -34,13 +35,13 @@ const GameRoom = ({
   const [isHost, setIsHost] = useState<boolean>(false);
   const [countdown, setCountdown] = useState(-1);
   const currWord = useRef("NO WORD");
+  const currIdentity = useRef("No Identity");
 
   useEffect(() => {
     // Fetch username and userId from localStorage
     const isHost = localStorage.getItem('isHost') === 'true' ? true : false;
     const storedUsername = localStorage.getItem('username');
     const storedUserId = localStorage.getItem('userId');
-    console.log('storeUserId is ', storedUserId)
     setUsername(storedUsername);
     setUserId(storedUserId);
     setIsHost(isHost);
@@ -89,12 +90,24 @@ const GameRoom = ({
 
       if (isHost) {
         socket.emit('get-word', roomCode, category.toLowerCase());
+        socket.emit('generate-identity', roomCode, numCyborgs);
       }
 
       socket.on('word-generated', (word: string) => {
         console.log('word is ', word);
         word = word.toUpperCase();
         currWord.current = word;
+      });
+
+      socket.on('identity-generated', (identity: string) => {
+        // HAVE A LOADING PAGE UNTIL THIS IS CALLED
+        identity = identity.toUpperCase();
+        currIdentity.current = identity;
+      });
+
+      socket.on('game-end', () => {
+        alert('Game has ended');
+        <RoundOver />
       });
 
       return () => {
@@ -116,7 +129,7 @@ const GameRoom = ({
   return (
     <>
       <div className="backgroundDiv h-screen bg-cover bg-center" style={{ backgroundImage: 'url(/robotBackground.png)' }}>
-      <PlayerIdentity timer={countdown} identity='SCIENTIST' word={currWord.current} category={category}/>
+      <PlayerIdentity timer={countdown} identity={currIdentity.current} word={currWord.current} category={category}/>
       </div>
     </>
   );
