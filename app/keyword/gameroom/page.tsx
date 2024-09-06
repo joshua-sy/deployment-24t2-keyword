@@ -10,6 +10,7 @@ import TimeDropDown from '@/components/keyword/timeDropDown/timeDropDown';
 import StartButton from '@/components/keyword/startButton/startButton';
 import PlayerBoard from '@/components/keyword/playerBoard/playerBoard';
 import { useRouter } from "next/navigation";
+import { useRef } from 'react';
 
 const socket = io('http://localhost:4000');
 
@@ -17,11 +18,11 @@ const GameRoom = ({
   searchParams
 }: {
   searchParams: {
-    roomCode: String;
+    roomCode: string;
   };
 }) => {
   const router = useRouter();
-  const [users, setUsers] = useState<{ username: string; isHost: boolean; readyStatus: boolean; }[]>([]);
+  const [users, setUsers] = useState<{ username: string; isHost: boolean; readyStatus: boolean; roundLoaded: boolean}[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const roomCode = searchParams.roomCode;
@@ -30,6 +31,13 @@ const GameRoom = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('CELEBRITIES');
   const [selectedCyborg, setSelectedCyborg] = useState<string>('1');
   const [selectedTime, setSelectedTime] = useState<string>('4 min');
+  const isNavigatingRef = useRef(false);
+
+  const selectedValuesRef = useRef({ selectedCategory, selectedCyborg, selectedTime });
+
+  useEffect(() => {
+    selectedValuesRef.current = { selectedCategory, selectedCyborg, selectedTime };
+  }, [selectedCategory, selectedCyborg, selectedTime]);
 
   const handleReady = (roomCode: String, userId: string) => {
     console.log('handle ready function ', roomCode, userId)
@@ -60,8 +68,33 @@ const GameRoom = ({
 
   const handleTimeSelect = (value: string) => {
     setSelectedTime(value);
+    console.log('CURR VALUES', {
+      roomCode,
+      selectedCategory,
+      selectedCyborg,
+      selectedTime
+    });
     console.log('Selected time:', value);
   };
+
+  useEffect(() => {
+    console.log('Updated state:', { selectedCategory, selectedCyborg, selectedTime });
+  }, [selectedCategory, selectedCyborg, selectedTime]);
+  
+  // Listen for updates to the room's user list
+  const handleUpdateRoom = (usersInRoom: any) => {
+    setUsers(usersInRoom);
+  };
+  
+  const handleGameStart = () => {
+    console.log('Navigating with:', {
+      roomCode,
+      ...selectedValuesRef.current
+    });
+    isNavigatingRef.current = true;
+    router.push(`/keyword/round?roomCode=${roomCode}&category=${selectedValuesRef.current.selectedCategory}&cyborg=${selectedValuesRef.current.selectedCyborg}&time=${selectedValuesRef.current.selectedTime}`);
+    // router.push(`/keyword/round?roomCode=${roomCode}`);
+  }
 
   const findNewHost = () => {
     console.log(users);
@@ -117,26 +150,22 @@ const GameRoom = ({
         setUsers(usersInRoom);
       });
 
-      // Listen for updates to the room's user list
-      const handleUpdateRoom = (usersInRoom: any) => {
-        setUsers(usersInRoom);
-      };
-
       socket.on('update-room', handleUpdateRoom);
 
-      const handleGameStart = () => {
-        router.push(`/keyword/round?roomCode=${roomCode}`);
-      }
+      
       socket.on('game-start', handleGameStart)
 
       return () => {
-        socket.emit('leave-room', roomCode, userId);
-        console.log("LEAVING G");
-        console.log(users);
+        if (!isNavigatingRef.current) {
+          console.log("isnavigating: " + isNavigatingRef);
+          socket.emit('leave-room', roomCode, userId);
+          console.log("LEAVING PEEE");
+        }
         // if (isHost) {
         //   console.log("HELLO");
         //   findNewHost();
         // }
+        socket.off('game-start', handleGameStart);
         socket.off('update-room', handleUpdateRoom);
       };
     }
@@ -144,29 +173,35 @@ const GameRoom = ({
 
   const signalAllReady = () => {
     // router.push(`/keyword/round?roomCode=${roomCode}`);
-    socket.emit('all-ready', roomCode, userId);
+    if (allReady) {
+      isNavigatingRef.current = true;
+      socket.emit('all-ready', roomCode, userId);
+    }
   }
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(roomCode).then(() => {
+      alert(`Room code copied: ${roomCode}`);
+    }).catch((err) => {
+      console.error('Failed to copy: ', err);
+    });
+  };
 
   return (
     <>
       <div className="\backgroundDiv bg-robot bg-cover h-screen bg-center-left-px">
         <div className="contentContainer text-center w-[500px] mx-auto">
-          <h1>Welcome to the Game Room</h1>
-            <p>CODE: {roomCode}</p>
-            <CategoryDropDown onSelect={handleCategorySelect}/>
-            <CyborgDropDown onSelect={handleCyborgSelect}/>
-            <TimeDropDown onSelect={handleTimeSelect}/>
-            <p>list of users:</p>
-            <ul>
-              {users.map((user, index) => (
-                <li key={index}>
-                  {user.username} {user.isHost && "(Host)"} {!user.readyStatus && "Not"} {"Ready"}
-                </li>
-              ))}
-            </ul>
+          <h1 className='text-white'>Welcome to the Game Room</h1>
+            <p className='text-white'>CODE: {roomCode}</p>
+            <RedButton 
+            label = 'COPY CODE'
+            onClick={handleCopy} 
+            />
+            {isHost && <CategoryDropDown onSelect={handleCategorySelect}/>}
+            {isHost && <CyborgDropDown onSelect={handleCyborgSelect}/>}
+            {isHost && <TimeDropDown onSelect={handleTimeSelect}/>}
             <PlayerBoard users={users}/>
             <RedButton onClick={() => {userId && handleReady(roomCode, userId)}} label='READY UP'/>
-            {/*make it so that once all are ready then able to be clicked*/}
             {isHost && <StartButton label='START GAME' allReady={allReady} onClick={signalAllReady} />}
         </div>
       </div>

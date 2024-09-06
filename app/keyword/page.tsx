@@ -72,9 +72,9 @@ export default function Home() {
   useEffect(() => {
     if (roomCodeToCheck && name) {
       const userId = uuidv4(); // Generate a unique user ID
-      socket?.emit("join-room", roomCodeToCheck, name, userId, (response: any) => {
-        if (response.error) {
-          alert(response.error);
+      socket?.emit("check-room-exist", roomCodeToCheck, (returnMessage: any) => {
+        if (returnMessage.error) {
+          alert(returnMessage.error);
         } else {
           router.push(`/keyword/gameroom?roomCode=${roomCodeToCheck}`);
         }

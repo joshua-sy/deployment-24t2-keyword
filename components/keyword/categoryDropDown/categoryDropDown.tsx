@@ -54,6 +54,10 @@ export default function CategoryDropDown({ onSelect }: { onSelect: (category: st
           <ListItemText
             primary="CATEGORY:"
             secondary={options[selectedIndex]}
+            sx={{
+              '& .MuiListItemText-primary': { color: 'white' },   // Style for primary text
+              '& .MuiListItemText-secondary': { color: 'white' }, // Style for secondary text
+            }}
           />
         </ListItemButton>
       </List>

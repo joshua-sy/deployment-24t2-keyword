@@ -46,6 +46,10 @@ export default function CyborgDropDown({ onSelect }: { onSelect: (category: stri
           <ListItemText
             primary="CYBORG COUNT:"
             secondary={options[selectedIndex]}
+            sx={{
+              '& .MuiListItemText-primary': { color: 'white' },   // Style for primary text
+              '& .MuiListItemText-secondary': { color: 'white' }, // Style for secondary text
+            }}
           />
         </ListItemButton>
       </List>

@@ -47,6 +47,10 @@ export default function TimeDropDown({ onSelect }: { onSelect: (time: string) =>
           <ListItemText
             primary="TIME:"
             secondary={options[selectedIndex]}
+            sx={{
+              '& .MuiListItemText-primary': { color: 'white' },   // Style for primary text
+              '& .MuiListItemText-secondary': { color: 'white' }, // Style for secondary text
+            }}
           />
         </ListItemButton>
       </List>

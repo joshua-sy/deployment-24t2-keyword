@@ -1,6 +1,8 @@
 let ioInstance;
 let rooms = {};
 
+const generateRandomWord = require('./server');
+
 function initializeSocketServer(server) {
   if (ioInstance) return ioInstance;
 
@@ -71,59 +73,59 @@ function initializeSocketServer(server) {
       updateReady(roomCode, userId);
     });
 
-    socket.on('disconnect', () => {
-      console.log('disconnect is called')
-      for (const roomCode in rooms) {
-        const userIndex = rooms[roomCode].users.findIndex(user => user.socket === socket.id);
-        if (userIndex !== -1) {
-            rooms[roomCode].users.splice(userIndex, 1);
+    // socket.on('disconnect', () => {
+    //   console.log('disconnect is called')
+    //   for (const roomCode in rooms) {
+    //     const userIndex = rooms[roomCode].users.findIndex(user => user.socket === socket.id);
+    //     if (userIndex !== -1) {
+    //         rooms[roomCode].users.splice(userIndex, 1);
 
-            ioInstance.to(roomCode).emit('update-room', userMap(roomCode));
+    //         ioInstance.to(roomCode).emit('update-room', userMap(roomCode));
 
 
-            if (rooms[roomCode].users.length === 0) {
-                delete rooms[roomCode];
-                console.log(`Room ${roomCode} deleted as it is now empty.`);
-            }
+    //         if (rooms[roomCode].users.length === 0) {
+    //             delete rooms[roomCode];
+    //             console.log(`Room ${roomCode} deleted as it is now empty.`);
+    //         }
 
-            break;
-}       
-      }
-    });
+    //         break;
+    //     }       
+    //   }
+    // });
 
     socket.on('check-room-exist', (roomCode, callback) => {
       if (!rooms[roomCode]) {
         callback({ error: `Room ${roomCode} does not exist.` });
       } else {
-        return;
+        callback({ success: `Room ${roomCode} exists.` });
       }
     });
 
-    // socket.on('leave-room', (roomCode, userId) => {
-    //   console.log('leave room is called')  
-    //   if (!rooms[roomCode] || !rooms[roomCode].users) {
-    //         return;
-    //     }
-    //     const userIndex = rooms[roomCode].users.findIndex(user => user.uid === userId);
-    //     socket.leave(roomCode);
-    //     console.log(`${userId} left room: ${roomCode}`);
+    socket.on('leave-room', (roomCode, userId) => {
+      console.log('leave room is called')  
+      if (!rooms[roomCode] || !rooms[roomCode].users) {
+            return;
+        }
+        const userIndex = rooms[roomCode].users.findIndex(user => user.uid === userId);
+        socket.leave(roomCode);
+        console.log(`${userId} left room: ${roomCode}`);
         
-    //     if (userIndex !== -1) {
-    //         rooms[roomCode].users.splice(userIndex, 1);
+        if (userIndex !== -1) {
+            rooms[roomCode].users.splice(userIndex, 1);
   
-    //         ioInstance.to(roomCode).emit('update-room', rooms[roomCode].users.map(user => ({
-    //           username: user.username,
-    //           isHost: user.uid === rooms[roomCode].host,
-    //           readyStatus: user.readyStatus
-    //         })));
+            ioInstance.to(roomCode).emit('update-room', rooms[roomCode].users.map(user => ({
+              username: user.username,
+              isHost: user.uid === rooms[roomCode].host,
+              readyStatus: user.readyStatus
+            })));
 
-    //         // If the room is empty, delete it
-    //         if (rooms[roomCode].users.length === 0) {
-    //             delete rooms[roomCode];
-    //             console.log(`Room ${roomCode} deleted as it is now empty.`);
-    //         }
-    //     }
-    // });
+            // If the room is empty, delete it
+            if (rooms[roomCode].users.length === 0) {
+                delete rooms[roomCode];
+                console.log(`Room ${roomCode} deleted as it is now empty.`);
+            }
+        }
+    });
 
     socket.on('player-loaded-round', (roomCode, userId) => {
       if (rooms[roomCode]) {
@@ -165,9 +167,13 @@ function initializeSocketServer(server) {
       ioInstance.to(roomCode).emit('game-start');
     });
 
-
-
+    socket.on('get-word', (roomCode, categoryName) => {
+      // const word = generateRandomWord(categoryName);
+      // ioInstance.to(roomCode).emit('word-generated', word);
+    });
   });
+
+
 
   console.log('Socket.IO server initialized');
   return ioInstance;

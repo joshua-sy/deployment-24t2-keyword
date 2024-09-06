@@ -85,14 +85,14 @@ const PlayerBoard: React.FC<PlayerBoardProps> = ({
               <div className='flex justify-between py-4 px-5 text-lg items-center'>
                 <div className='playerName flex items-center'>
                   <Image src="/icons/playerIcon.svg" alt="playerIcon" width={30} height={30}/>
-                  <div className='px-3'>
+                  <div className='px-3 text-white'>
                     {user.username}
                    </div>
                    <div>
                     {user.isHost && <Image src="/icons/crown.svg" alt="hostIcon" width={20} height={20}/>}
                   </div>
                 </div>
-                <div className='playerStatus'>
+                <div className='playerStatus text-white'>
                   {user.readyStatus ? 'READY' : 'NOT READY'}
                 </div>
               </div>

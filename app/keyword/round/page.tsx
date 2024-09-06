@@ -7,6 +7,7 @@ import { io } from 'socket.io-client';
 import { useRouter } from "next/navigation";
 import StartButton from '@/components/keyword/startButton/startButton';
 import PlayerBoard from '@/components/keyword/playerBoard/playerBoard';
+import router from 'next/router';
 
 const socket = io('http://localhost:4000');
 
@@ -14,19 +15,29 @@ const GameRoom = ({
   searchParams
 }: {
   searchParams: {
-    roomCode: String;
+    roomCode: string;
+    category: string;
+    cyborg: string;
+    time: string;
   };
 }) => {
-  const router = useRouter();
+  const roomCode = searchParams.roomCode;
+  const category = searchParams.category;
+  const cyborg = searchParams.cyborg;
+  const time = searchParams.time;
+  console.log('roomCode is ', roomCode);
+  console.log('category is ', category);
+  console.log('cyborg is ', cyborg);
+  console.log('time is ', time);
+
   const [users, setUsers] = useState<{
     roundLoaded: boolean; username: string; isHost: boolean; readyStatus: boolean; 
 }[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
-  const roomCode = searchParams.roomCode;
+  // const roomCode = searchParams.roomCode;
   const [isHost, setIsHost] = useState<boolean>(false);
   const [countdown, setCountdown] = useState(-1);
-
 
 
 
@@ -39,12 +50,18 @@ const GameRoom = ({
     setUsername(storedUsername);
     setUserId(storedUserId);
     setIsHost(isHost);
+
+    socket.emit('get-word', roomCode, category.toLowerCase());
+
+    socket.on('word-generated', (word: string) => {
+      console.log('word is ', word);
+    });
   }, []);
 
  
 
   useEffect(() => {
-    if (roomCode && username && userId) {
+    if (roomCode && username && userId) {   
       socket.emit("check-room-exist", roomCode, (returnMessage: any) => {
         // If it can't find a room, then room does not exist.
         if (returnMessage.error && !isHost) {
@@ -54,7 +71,14 @@ const GameRoom = ({
           return;
         }
       });
-      
+
+      socket?.emit('player-loaded-round', roomCode, userId, (newCountdown: any) => {
+        if (newCountdown.error) {
+          alert(newCountdown.error);
+          return;
+        }
+      });
+
       // If room exist, join the room
       socket?.emit('join-room', roomCode, username, userId, (usersInRoom: any) => {
         if (usersInRoom.error) {
@@ -64,18 +88,10 @@ const GameRoom = ({
         setUsers(usersInRoom);
       });
 
-      socket?.emit('player-loaded-round', roomCode, userId, (newCountdown: any) => {
-        if (newCountdown.error) {
-          alert(newCountdown.error);
-          return;
-        }
-      });
-
       // Listen for updates to the room's user list
       const handleUpdateRoom = (usersInRoom: any) => {
         setUsers(usersInRoom);
       };
-
 
       socket.on('update-room', handleUpdateRoom);
 
@@ -84,8 +100,8 @@ const GameRoom = ({
       });
 
       return () => {
-        socket.emit('leave-room', roomCode, userId);
-        console.log("LEAVING G");
+        // socket.emit('leave-room', roomCode, userId);
+        // console.log("LEAVING GANG");
         console.log(users);
         // if (isHost) {
         //   console.log("HELLO");
@@ -100,16 +116,14 @@ const GameRoom = ({
     <>
       <div className="backgroundDiv h-screen bg-cover bg-center" style={{ backgroundImage: 'url(/robotBackground.png)' }}>
         <div className="contentContainer text-center w-[500px] mx-auto">
-          <h1>Round</h1>
-            <p>CODE: {roomCode}</p>
-            <h1>{countdown}</h1>
-            <ul>
+            <h1>TIME LEFT: {countdown}</h1>
+            {/* <ul>
               {users.map((user, index) => (
                 <li key={index}>
                   {user.username} {user.isHost && "(Host)"} {!user.roundLoaded && "Not"} {"Ready"}
                 </li>
               ))}
-            </ul>
+            </ul> */}
             <PlayerBoard users={users}/>
         </div>
       </div>
