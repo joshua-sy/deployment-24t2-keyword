@@ -60,10 +60,13 @@ export default function Home() {
   };
 
   const handleJoin = (roomCode: string, name: string) => {
+    const userId = uuidv4(); // Generate a unique user ID
     setRoomCodeToCheck(roomCode);
     setName(name);
     localStorage.setItem('isHost', "false");
     localStorage.setItem('username', name);
+    localStorage.setItem('userId', userId);
+
   }
 
   useEffect(() => {
@@ -96,8 +99,9 @@ export default function Home() {
 
   return (
     <>
-      <div className="backgroundDiv h-screen bg-cover bg-center" style={{ backgroundImage: 'url(/robotBackground.png)' }}>
-        <div className={`contentContainer text-center max-w-[500px] mx-auto transition-all duration-500 ease-in-out 
+      <div className="backgroundDiv bg-robot bg-cover h-screen bg-center-left-px" >
+        {/* Width is fixed to 500 pixels for now */}
+        <div className={`contentContainer text-center w-[500px] mx-auto transition-all duration-500 ease-in-out 
           ${showRules ? 'opacity-0 translate-y-10' : 'opacity-100 translate-y-0'}`}>
 
           {/* The original page will be hidden once the 'HOW TO PLAY' button is clicked */}
