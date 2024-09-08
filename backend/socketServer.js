@@ -49,6 +49,7 @@ function initializeSocketServer(server) {
             roundLoaded: false
           });
         } else {
+          console.log("update socket id for user ", username, " to ", socket.id);
           existingUser.socket = socket.id;
         }
     
@@ -155,16 +156,13 @@ function initializeSocketServer(server) {
         }
         // store the interval ID for the room.
         rooms[roomCode].intervalId = intervalId
-        console.log("LOADED ONE USER", userId);
       }
     });
 
     // The socket that will take the signal when host clicks start game
     socket.on('all-ready', (roomCode, userId) => {
       // maybe add a check if user is actually host here
-      // and if all users are ready
 
-      // but we r gonna be naive for now and just say all are ready
       console.log('roooms in all-ready', rooms[roomCode])
       rooms[roomCode].gameStart = true;
       ioInstance.to(roomCode).emit('game-start');
@@ -183,23 +181,41 @@ function initializeSocketServer(server) {
     });
 
     socket.on('generate-identity', (roomCode, numCyborgs) => {
-      const users = rooms[roomCode].users;
-      const identities = Array(numCyborgs).fill('CYBORG');
-      const numScientists = users.length - numCyborgs;
-      identities.push(...Array(numScientists).fill('SCIENTIST'));
-      shuffleArray(identities);
-      for (let i = 0; i < users.length; i++) {
-        ioInstance.to(users[i].socket).emit('identity-generated', identities[i]);
+      const room = rooms[roomCode];
+      if (!room) {
+        console.log('Room not found');
+        return;
+      }
+
+      if (room.identitiesGenerated === undefined) {
+        room.identitiesGenerated = false;
+      }
+      
+      if (room.identitiesGenerated) {
+        console.log('Identities have already been generated for this room');
+        return;
+      }
+    
+      const allUsersLoaded = room.users.every(user => user.roundLoaded === true);
+      if (allUsersLoaded) {
+        const users = rooms[roomCode].users;
+        const identities = Array(numCyborgs).fill('CYBORG');
+        const numScientists = users.length - numCyborgs;
+        identities.push(...Array(numScientists).fill('SCIENTIST'));
+        shuffleArray(identities);
+        for (let i = 0; i < users.length; i++) {
+          ioInstance.to(users[i].socket).emit('identity-generated', identities[i]);
+        }
+      } else {
+        console.log('not all users are loaded');
       }
     });
   });
-
-
-
   console.log('Socket.IO server initialized');
   return ioInstance;
 }
 
+// randomise the order of the identities
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));

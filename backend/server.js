@@ -12,7 +12,7 @@ const fs = require('fs');
 const path = require('path');
 
 function generateRandomWord(categoryName, callback) {
-  fs.readdir('categoryWords', (err, files) => {
+  fs.readdir('backend/categoryWords', (err, files) => {
     if (err) {
       console.error(err);
       callback(err, null);
@@ -27,7 +27,7 @@ function generateRandomWord(categoryName, callback) {
       return;
     }
 
-    fs.readFile(path.join('categoryWords', categoryFile), 'utf8', (err, data) => {
+    fs.readFile(path.join('backend/categoryWords', categoryFile), 'utf8', (err, data) => {
       if (err) {
         console.error(err);
         callback(err, null);

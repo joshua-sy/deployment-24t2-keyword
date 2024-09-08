@@ -130,7 +130,6 @@ const GameRoom = ({
   return (
     <>
       <div className="backgroundDiv h-screen bg-cover bg-center" style={{ backgroundImage: 'url(/robotBackground.png)' }}>
-      <h1>{socket.id}</h1>
       <PlayerIdentity timer={countdown} identity={currIdentity.current} word={currWord.current} category={category}/>
       </div>
     </>

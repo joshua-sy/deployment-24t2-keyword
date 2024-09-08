@@ -27,11 +27,19 @@ export default function PlayerIdentity({timer, identity, word, category}: Player
 
   DENY BEING THE CYBORG [red]AT ALL COST[/red].
   `;
+  const hiddenRuleContent = `LOADING...`;
 
-  let identityImage = "/icons/scientistIcon.png";
-  let identityText = "A SCIENTIST";
-  let displayedWord = `WORD: ${word}`;
-  let howToPlayContent = scientistRuleContent;
+  let identityImage = "/icons/questionMarkIcon.png";
+  let identityText = "LOADING IDENTITY...";
+  let displayedWord = `LOADING...`;
+  let howToPlayContent = hiddenRuleContent;
+
+  if (identity === "SCIENTIST") {
+    identityImage = "/icons/scientistIcon.png";
+    identityText = "A SCIENTIST";
+    displayedWord = `WORD: ${word}`;
+    howToPlayContent = scientistRuleContent;
+  }
   if (identity === "CYBORG") {
     identityImage = "/icons/robotIcon.png";
     identityText = "THE CYBORG";
