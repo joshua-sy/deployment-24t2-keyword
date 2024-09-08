@@ -9,6 +9,7 @@ import router from 'next/router';
 import PlayerIdentity from '@/components/keyword/playerIdentity/PlayerIdentity';
 import RoundOver from '@/components/keyword/roundOver/RoundOver';
 import { useRef } from 'react';
+import LoadingModal from '@/components/keyword/LoadingModal/LoadingModal';
 
 const socket = io('http://localhost:4000');
 
@@ -33,7 +34,7 @@ const GameRoom = ({
   const [userId, setUserId] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [isHost, setIsHost] = useState<boolean>(false);
-  const [countdown, setCountdown] = useState(-1);
+  const [countdown, setCountdown] = useState('');
   const currWord = useRef("NO WORD");
   const currIdentity = useRef("No Identity");
 
@@ -47,7 +48,9 @@ const GameRoom = ({
     setIsHost(isHost);
   }, []);
 
- 
+  function str_pad_left(string: string, pad: string, length: number) {
+    return (new Array(length + 1).join(pad) + string).slice(-length);
+  }
 
   useEffect(() => {
     if (roomCode && username && userId) {   
@@ -85,7 +88,10 @@ const GameRoom = ({
       socket.on('update-room', handleUpdateRoom);
 
       socket.on('countdown-update', (newCountdown) => {
-        setCountdown(newCountdown);
+        const minutes = Math.floor(newCountdown / 60);
+        const seconds = newCountdown - minutes * 60;
+        const formattedTime = str_pad_left(minutes.toString(), '0', 2) + ':' + str_pad_left(seconds.toString(), '0', 2);
+        setCountdown(formattedTime);
       });
 
       if (isHost) {
@@ -130,7 +136,10 @@ const GameRoom = ({
   return (
     <>
       <div className="backgroundDiv h-screen bg-cover bg-center" style={{ backgroundImage: 'url(/robotBackground.png)' }}>
-      <PlayerIdentity timer={countdown} identity={currIdentity.current} word={currWord.current} category={category}/>
+        {/* Add currWord.current === 'No WORD' once bug fixed */}
+        {currIdentity.current === 'No Identity' || countdown === '' ? <LoadingModal /> : null}
+        <PlayerIdentity timer={countdown} identity={currIdentity.current} word={currWord.current} category={category}/>
+
       </div>
     </>
   );
