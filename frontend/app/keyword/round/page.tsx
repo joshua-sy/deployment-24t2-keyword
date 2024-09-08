@@ -90,8 +90,9 @@ const GameRoom = ({
 
       if (isHost) {
         socket.emit('get-word', roomCode, category.toLowerCase());
-        socket.emit('generate-identity', roomCode, numCyborgs);
       }
+
+      socket.emit('generate-identity', roomCode, numCyborgs);
 
       socket.on('word-generated', (word: string) => {
         console.log('word is ', word);
@@ -106,7 +107,7 @@ const GameRoom = ({
       });
 
       socket.on('game-end', () => {
-        alert('Game has ended');
+        // game end
         <RoundOver />
       });
 
@@ -129,6 +130,7 @@ const GameRoom = ({
   return (
     <>
       <div className="backgroundDiv h-screen bg-cover bg-center" style={{ backgroundImage: 'url(/robotBackground.png)' }}>
+      <h1>{socket.id}</h1>
       <PlayerIdentity timer={countdown} identity={currIdentity.current} word={currWord.current} category={category}/>
       </div>
     </>

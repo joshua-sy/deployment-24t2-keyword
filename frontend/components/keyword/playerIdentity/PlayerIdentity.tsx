@@ -32,7 +32,7 @@ export default function PlayerIdentity({timer, identity, word, category}: Player
   let identityText = "A SCIENTIST";
   let displayedWord = `WORD: ${word}`;
   let howToPlayContent = scientistRuleContent;
-  if (identity !== "SCIENTIST") {
+  if (identity === "CYBORG") {
     identityImage = "/icons/robotIcon.png";
     identityText = "THE CYBORG";
     displayedWord = `CATEGORY: ${category}`;
