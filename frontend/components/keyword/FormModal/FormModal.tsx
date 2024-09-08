@@ -9,7 +9,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import RedButton from '../redButton/RedButton';
 
 interface FormModalProps {
-    onSubmit: (roomCode: string, name: string) => void;
+  onSubmit: (roomCode: string, name: string) => void;
 }
 
 export default function FormModal({ onSubmit }: FormModalProps) {
@@ -38,7 +38,7 @@ export default function FormModal({ onSubmit }: FormModalProps) {
 
   return (
     <React.Fragment>
-        <RedButton onClick={handleClickOpen} label={"JOIN ROOM"}/>
+      <RedButton onClick={handleClickOpen} label={"JOIN ROOM"} />
       <Dialog
         open={open}
         onClose={handleClose}
