@@ -131,13 +131,21 @@ const GameRoom = ({
   useEffect(() => {
     if (roomCode && username && userId) {
       if (isHost) {
-        socket.emit('create-room', username, userId, roomCode);
+        socket.emit("check-room-exist", roomCode, (returnMessage: any) => {
+          if (returnMessage.error) {
+            // if there is no existing room then create it.
+            socket.emit('create-room', username, userId, roomCode);
+          }
+        });
       } else {
         socket.emit("check-room-exist", roomCode, (returnMessage: any) => {
           if (returnMessage.error && !isHost) {
             alert(returnMessage.error);
             window.history.back();
             return;
+          } else {
+            // TODO: prompt user for username
+            console.log("prompt user for username.")
           }
         });
       }
@@ -150,6 +158,7 @@ const GameRoom = ({
         setUsers(usersInRoom);
       });
 
+
       socket.on('update-room', handleUpdateRoom);
 
       
@@ -157,9 +166,7 @@ const GameRoom = ({
 
       return () => {
         if (!isNavigatingRef.current) {
-          console.log("isnavigating: " + isNavigatingRef);
           socket.emit('leave-room', roomCode, userId);
-          console.log("LEAVING PEEE");
         }
         // if (isHost) {
         //   console.log("HELLO");
