@@ -7,6 +7,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import RedButton from '../redButton/RedButton';
+import { Box } from '@/node_modules/@mui/material/index';
 
 interface FormModalProps {
   onSubmit: (roomCode: string, name: string) => void;
@@ -44,11 +45,13 @@ export default function FormModal({ onSubmit }: FormModalProps) {
         onClose={handleClose}
         PaperProps={{
           component: 'form',
-          onSubmit: handleSubmit
+          onSubmit: handleSubmit,
+          style: {backgroundColor : "white", color: "black", borderRadius: "10px"}
         }}
+
       >
-        <DialogContent>
-          <DialogContentText>
+        <DialogContent style = {{position: "relative", top: "18px"}}>
+          <DialogContentText style = {{textAlign: 'center'}}>
             Enter Room Code
           </DialogContentText>
           <TextField
@@ -57,29 +60,45 @@ export default function FormModal({ onSubmit }: FormModalProps) {
             margin="dense"
             id="code"
             name="code"
-            label="Room Code"
+            placeholder = "1234"
             fullWidth
-            variant="standard"
+          
           />
         </DialogContent>
         <DialogContent>
-          <DialogContentText>
+          <DialogContentText style = {{textAlign: 'center'}}>
             Enter Name
           </DialogContentText>
+
           <TextField
             autoFocus
             required
             margin="dense"
             id="name"
             name="name"
-            label="Name"
             fullWidth
-            variant="standard"
+            placeholder="Scientist"
+            type = "text"
+
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleClickOpen} type="submit">JOIN</Button>
+        <Button 
+              onClick={handleClose}
+              style={{ 
+                position: 'absolute',
+                top: '8px',
+                right: '8px',
+                minWidth: '30px', 
+                padding: '0', 
+                fontSize: '16px', 
+                color: 'black', 
+                backgroundColor: 'transparent' 
+              }}
+            >
+              X
+            </Button>
+          <Button onClick={handleClickOpen} type="submit" style = {{right: '4px', color: 'white', backgroundColor: "red", justifyContent: 'center', position: 'relative', bottom: 0, width: '100%'}}>JOIN</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>
