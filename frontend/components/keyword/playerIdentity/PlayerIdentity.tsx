@@ -8,9 +8,10 @@ interface PlayerIdentityProps {
   identity: string;
   word: string;
   category: string;
+  isHost: boolean;
 }
 
-export default function PlayerIdentity({timer, identity, word, category}: PlayerIdentityProps) {
+export default function PlayerIdentity({timer, identity, word, category, isHost}: PlayerIdentityProps) {
   const scientistRuleContent = `
   EVERYBODY TAKES TURNS SAYING A WORD CORRELATING TO THE WORD GIVEN.
 
@@ -91,7 +92,7 @@ export default function PlayerIdentity({timer, identity, word, category}: Player
             <div className="redButtonContainer mt-3">
               <RedButton label="WHAT TO DO" onClick={handleShowRules} />
             </div>
-            <RedButton label="END GAME" />
+            {isHost && <RedButton label="END GAME" />}
           </div>
         )}
       </div >

@@ -5,7 +5,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { useRouter } from "next/navigation";
-import router from 'next/router';
+import router from 'next/navigation';
 import PlayerIdentity from '@/components/keyword/playerIdentity/PlayerIdentity';
 import RoundOver from '@/components/keyword/roundOver/RoundOver';
 import { useRef } from 'react';
@@ -31,12 +31,24 @@ const GameRoom = ({
   const [users, setUsers] = useState<{
     roundLoaded: boolean; username: string; isHost: boolean; readyStatus: boolean; 
 }[]>([]);
+  const router = useRouter();
   const [userId, setUserId] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [isHost, setIsHost] = useState<boolean>(false);
   const [countdown, setCountdown] = useState('');
   const currWord = useRef("NO WORD");
   const currIdentity = useRef("No Identity");
+  const [isRoundOver, setIsRoundOver] = useState(false);
+  const isNavigatingRef = useRef(false);
+
+  const returnToLobby = () => {
+    isNavigatingRef.current = true;
+    router.push('/keyword/gameroom?roomCode=' + roomCode);
+  };
+
+  const exitRoom = () => {
+    router.push('/keyword');
+  };
 
   useEffect(() => {
     // Fetch username and userId from localStorage
@@ -113,23 +125,24 @@ const GameRoom = ({
       });
 
       socket.on('game-end', () => {
-        // game end
-        <RoundOver />
+        setIsRoundOver(true);
       });
 
       return () => {
         // console.log("LEAVING GANG");
         console.log(users);
         // if (isHost) {
-          //   console.log("HELLO");
-          //   findNewHost();
-          // }
-          socket.off('update-room', handleUpdateRoom);
-          socket.off('countdown-update');
-          socket.off('word-generated');
-          socket.off('player-loaded-round');
+        //   console.log("HELLO");
+        //   findNewHost();
+        // }
+        socket.off('update-room', handleUpdateRoom);
+        socket.off('countdown-update');
+        socket.off('word-generated');
+        socket.off('player-loaded-round');
+        if (!isNavigatingRef.current) {
           socket.emit('leave-room', roomCode, userId);
-        };
+        }
+      };
     }
   }, [roomCode, username, userId]);
 
@@ -137,9 +150,9 @@ const GameRoom = ({
     <>
       <div className="backgroundDiv h-screen bg-cover bg-center" style={{ backgroundImage: 'url(/robotBackground.png)' }}>
         {/* Add currWord.current === 'No WORD' once bug fixed */}
-        {currIdentity.current === 'No Identity' || currWord.current === 'No WORD' || countdown === '' ? <LoadingModal /> : null}
-        <PlayerIdentity timer={countdown} identity={currIdentity.current} word={currWord.current} category={category}/>
-
+        {currIdentity.current === 'No Identity' || countdown === '' ? <LoadingModal /> : null}
+        <PlayerIdentity timer={countdown} identity={currIdentity.current} word={currWord.current} category={category} isHost={isHost}/>
+        {isRoundOver && <RoundOver onReturnToLobby={returnToLobby} onExitRoom={exitRoom}/>}
       </div>
     </>
   );

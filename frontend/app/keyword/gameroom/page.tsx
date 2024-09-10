@@ -22,11 +22,12 @@ const GameRoom = ({
   };
 }) => {
   const router = useRouter();
-  const [users, setUsers] = useState<{ username: string; isHost: boolean; readyStatus: boolean; roundLoaded: boolean}[]>([]);
+  const [users, setUsers] = useState<{ username: string; isHost: boolean; readyStatus: boolean; roundLoaded: boolean }[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const roomCode = searchParams.roomCode;
   const [isHost, setIsHost] = useState<boolean>(false);
+  const [readyStatus, setReadyStatus] = useState<boolean>(false);
   const [allReady, setAllReady] = useState<boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('CELEBRITIES');
   const [selectedCyborg, setSelectedCyborg] = useState<string>('1');
@@ -40,6 +41,7 @@ const GameRoom = ({
   }, [selectedCategory, selectedCyborg, selectedTime]);
 
   const handleReady = (roomCode: String, userId: string) => {
+    setReadyStatus(!readyStatus);
     console.log('handle ready function ', roomCode, userId)
     socket.emit('update-ready', roomCode, userId, (usersInRoom: any) => {
       setUsers(usersInRoom);
@@ -80,12 +82,12 @@ const GameRoom = ({
   useEffect(() => {
     console.log('Updated state:', { selectedCategory, selectedCyborg, selectedTime });
   }, [selectedCategory, selectedCyborg, selectedTime]);
-  
+
   // Listen for updates to the room's user list
   const handleUpdateRoom = (usersInRoom: any) => {
     setUsers(usersInRoom);
   };
-  
+
   const handleGameStart = () => {
     console.log('Navigating with:', {
       roomCode,
@@ -114,10 +116,12 @@ const GameRoom = ({
     const isHost = localStorage.getItem('isHost') === 'true' ? true : false;
     const storedUsername = localStorage.getItem('username');
     const storedUserId = localStorage.getItem('userId');
+    const storedReadyStatus = localStorage.getItem('readyStatus') === 'true' ? true : false;
     console.log('storeUserId is ', storedUserId)
     setUsername(storedUsername);
     setUserId(storedUserId);
     setIsHost(isHost);
+    setReadyStatus(storedReadyStatus);
   }, []);
 
   useEffect(() => {
@@ -131,13 +135,21 @@ const GameRoom = ({
   useEffect(() => {
     if (roomCode && username && userId) {
       if (isHost) {
-        socket.emit('create-room', username, userId, roomCode);
+        socket.emit("check-room-exist", roomCode, (returnMessage: any) => {
+          if (returnMessage.error) {
+            // if there is no existing room then create it.
+            socket.emit('create-room', username, userId, roomCode);
+          }
+        });
       } else {
         socket.emit("check-room-exist", roomCode, (returnMessage: any) => {
           if (returnMessage.error && !isHost) {
             alert(returnMessage.error);
             window.history.back();
             return;
+          } else {
+            // TODO: prompt user for username
+            console.log("prompt user for username.")
           }
         });
       }
@@ -150,16 +162,15 @@ const GameRoom = ({
         setUsers(usersInRoom);
       });
 
+
       socket.on('update-room', handleUpdateRoom);
 
-      
+
       socket.on('game-start', handleGameStart)
 
       return () => {
         if (!isNavigatingRef.current) {
-          console.log("isnavigating: " + isNavigatingRef);
           socket.emit('leave-room', roomCode, userId);
-          console.log("LEAVING PEEE");
         }
         // if (isHost) {
         //   console.log("HELLO");
@@ -190,19 +201,22 @@ const GameRoom = ({
   return (
     <>
       <div className="\backgroundDiv bg-robot bg-cover h-screen bg-center-left-px">
-        <div className="contentContainer text-center w-[500px] mx-auto">
+        <div className="contentContainer text-center w-[500px] mx-auto backdrop-blur-sm">
           <h1 className='text-white'>Welcome to the Game Room</h1>
-            <p className='text-white'>CODE: {roomCode}</p>
-            <RedButton 
-            label = 'COPY CODE'
-            onClick={handleCopy} 
-            />
-            {isHost && <CategoryDropDown onSelect={handleCategorySelect}/>}
-            {isHost && <CyborgDropDown onSelect={handleCyborgSelect}/>}
-            {isHost && <TimeDropDown onSelect={handleTimeSelect}/>}
-            <PlayerBoard users={users}/>
-            <RedButton onClick={() => {userId && handleReady(roomCode, userId)}} label='READY UP'/>
-            {isHost && <StartButton label='START GAME' allReady={allReady} onClick={signalAllReady} />}
+          <p className='text-white'>CODE: {roomCode}</p>
+          <RedButton
+            label='COPY CODE'
+            onClick={handleCopy}
+          />
+          {isHost && <CategoryDropDown onSelect={handleCategorySelect} />}
+          {isHost && <CyborgDropDown onSelect={handleCyborgSelect} />}
+          {isHost && <TimeDropDown onSelect={handleTimeSelect} />}
+          <PlayerBoard users={users} />
+          <RedButton
+            onClick={() => { userId && handleReady(roomCode, userId) }}
+            label={readyStatus ? 'UNREADY' : 'READY'}
+          />
+          {isHost && <StartButton label='START GAME' allReady={allReady} onClick={signalAllReady} />}
         </div>
       </div>
     </>

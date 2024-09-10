@@ -22,11 +22,12 @@ function initializeSocketServer(server) {
         host: uid,
         users: [{ socket: socket.id, username, uid, readyStatus: false, roundLoaded: false }],
         gameStart: false,
-        timer: 10,
+        timer: 3,
         intervalId: null
       };
 
       socket.join(roomCode);
+      ioInstance.to(roomCode).emit('update-room', userMap(roomCode));
       console.log(`${username} created room: ${roomCode}`);
       console.log(rooms);
     });
@@ -54,9 +55,6 @@ function initializeSocketServer(server) {
         }
     
         socket.join(roomCode);
-        
-        console.log(`${username} joined room: ${roomCode}`);
-        console.log('users in room ', roomCode, ' are ', rooms[roomCode].users)
     
         const usersInRoom = userMap(roomCode);
 
@@ -99,7 +97,7 @@ function initializeSocketServer(server) {
       if (!rooms[roomCode]) {
         callback({ error: `Room ${roomCode} does not exist.` });
       } else {
-        callback({ success: `Room ${roomCode} exists.` });
+        callback(userMap(roomCode));
       }
     });
 
