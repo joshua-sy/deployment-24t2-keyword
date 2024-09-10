@@ -15,14 +15,14 @@ const StartButton: React.FC<startButtonProps> = ({
     <>
       <div className='buttonDiv py-3'>
         <button
-          className={`${allReady ? 'bg-green-400' : 'bg-figma-red'} border-black border-2 text-white text-2xl font-bold py-2 px-4 rounded w-[400px]`}
+          className={`transition-colors duration-300 ${allReady ? 'bg-green-400' : 'bg-figma-red'} border-black border-2 text-white text-2xl font-bold py-2 px-4 rounded w-[400px]`}
           onClick={onClick}
 
         >
           {label}
         </button>
       </div>
-      
+
     </>
   )
 

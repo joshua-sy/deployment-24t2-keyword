@@ -194,7 +194,7 @@ const GameRoom = ({
   return (
     <>
       <div className="\backgroundDiv bg-robot bg-cover h-screen bg-center-left-px">
-        <div className="contentContainer text-center w-[500px] mx-auto">
+        <div className="contentContainer text-center w-[500px] mx-auto backdrop-blur-sm">
           <h1 className='text-white'>Welcome to the Game Room</h1>
           <p className='text-white'>CODE: {roomCode}</p>
           <RedButton

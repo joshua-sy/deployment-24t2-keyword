@@ -82,7 +82,7 @@ const PlayerBoard: React.FC<PlayerBoardProps> = ({
           {users.map((user: User, index: number) => (
             <div
               key={index}
-              className={`playerContainer ${user.readyStatus ? '' : 'bg-[#972828] bg-opacity-50'}`}
+              className={`playerContainer transition-colors duration-300 ${user.readyStatus ? '' : 'bg-[#972828] bg-opacity-50'}`}
             >
               <div className='flex justify-between py-4 px-5 text-lg items-center'>
                 <div className='playerName flex items-center'>
