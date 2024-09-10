@@ -55,9 +55,6 @@ function initializeSocketServer(server) {
         }
     
         socket.join(roomCode);
-        
-        console.log(`${username} joined room: ${roomCode}`);
-        console.log('users in room ', roomCode, ' are ', rooms[roomCode].users)
     
         const usersInRoom = userMap(roomCode);
 
@@ -100,7 +97,7 @@ function initializeSocketServer(server) {
       if (!rooms[roomCode]) {
         callback({ error: `Room ${roomCode} does not exist.` });
       } else {
-        callback({ success: `Room ${roomCode} exists.` });
+        callback(userMap(roomCode));
       }
     });
 
