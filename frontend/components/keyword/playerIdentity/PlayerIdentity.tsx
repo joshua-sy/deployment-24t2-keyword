@@ -9,9 +9,11 @@ interface PlayerIdentityProps {
   word: string;
   category: string;
   isHost: boolean;
+  roomCode: string;
+  socket: any;
 }
 
-export default function PlayerIdentity({timer, identity, word, category, isHost}: PlayerIdentityProps) {
+export default function PlayerIdentity({timer, identity, word, category, isHost, socket, roomCode}: PlayerIdentityProps) {
   const scientistRuleContent = `
   EVERYBODY TAKES TURNS SAYING A WORD CORRELATING TO THE WORD GIVEN.
 
@@ -67,6 +69,11 @@ export default function PlayerIdentity({timer, identity, word, category, isHost}
     setShowRules(false);
   };
 
+  const handleEndGame = () => {
+    console.log(roomCode);
+    socket.emit('trigger-game-end', roomCode);
+  }
+
   return (
     <>
       <div className={`contentContainer mx-auto transition-all duration-500 ease-in-out
@@ -92,7 +99,7 @@ export default function PlayerIdentity({timer, identity, word, category, isHost}
             <div className="redButtonContainer mt-3">
               <RedButton label="WHAT TO DO" onClick={handleShowRules} />
             </div>
-            {isHost && <RedButton label="END GAME" />}
+            {isHost && <RedButton label="END GAME" onClick={handleEndGame}/>}
           </div>
         )}
       </div >

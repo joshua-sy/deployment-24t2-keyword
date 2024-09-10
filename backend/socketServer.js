@@ -22,7 +22,7 @@ function initializeSocketServer(server) {
         host: uid,
         users: [{ socket: socket.id, username, uid, readyStatus: false, roundLoaded: false }],
         gameStart: false,
-        timer: 3,
+        timer: 10,
         intervalId: null
       };
 
@@ -81,7 +81,6 @@ function initializeSocketServer(server) {
 
             ioInstance.to(roomCode).emit('update-room', userMap(roomCode));
 
-
             if (rooms[roomCode].users.length === 0) {
               clearInterval(rooms[roomCode].intervalId);
               delete rooms[roomCode];
@@ -131,13 +130,22 @@ function initializeSocketServer(server) {
     socket.on('player-loaded-round', (roomCode, userId) => {
       if (rooms[roomCode]) {
         const user = rooms[roomCode].users.find(user => user.uid === userId);
+        if (!user) {
+          console.log('user not found for round loaded');
+          return;
+        }
         user.roundLoaded = true;
         ioInstance.to(roomCode).emit('update-room', userMap(roomCode));
 
         // loop through users and check if roundLoaded == true
         const allUsersLoaded = rooms[roomCode].users.every(user => user.roundLoaded === true);
         let intervalId = null
-        if (allUsersLoaded) {
+        if (allUsersLoaded && rooms[roomCode].gameStart) {
+          // clear existing timers
+          if (rooms[roomCode].intervalId) {
+            clearInterval(rooms[roomCode].intervalId);
+          }
+
           intervalId = setInterval(() => {
             if (rooms[roomCode] && rooms[roomCode].timer > 0) {
               rooms[roomCode].timer--;
@@ -147,6 +155,7 @@ function initializeSocketServer(server) {
               // clear the interval once it reaches 0
               clearInterval(intervalId);
               ioInstance.to(roomCode).emit('countdown-update', rooms[roomCode].timer);
+              rooms[roomCode].timer = 10;
               ioInstance.to(roomCode).emit('game-end');
               rooms[roomCode].intervalId = null;
             }
@@ -157,13 +166,27 @@ function initializeSocketServer(server) {
       }
     });
 
+    socket.on('trigger-game-end', (roomCode) => {
+      console.log('trigger game end is called')
+      console.log(rooms[roomCode]);
+      if (rooms[roomCode]) {
+        clearInterval(rooms[roomCode].intervalId);
+        rooms[roomCode].timer = 10;
+        rooms[roomCode].intervalId = null;
+        rooms[roomCode].gameStart = false;
+        ioInstance.to(roomCode).emit('game-end');
+      }
+    });
+
     // The socket that will take the signal when host clicks start game
     socket.on('all-ready', (roomCode, userId) => {
       // maybe add a check if user is actually host here
 
-      console.log('roooms in all-ready', rooms[roomCode])
       rooms[roomCode].gameStart = true;
       ioInstance.to(roomCode).emit('game-start');
+      
+      // make all ready status false
+      rooms[roomCode].users.forEach(user => user.readyStatus = false);
     });
 
     socket.on('get-word', (roomCode, categoryName) => {
@@ -225,7 +248,15 @@ function shuffleArray(array) {
 function updateReady(roomCode, userId) {
   console.log('users in updateReadyAre for roomCode are : ', rooms[roomCode])
   console.log('rooms data structure ', rooms)
+  if (!rooms[roomCode]) {
+    console.log('room not found');
+    return;
+  }
   const user = rooms[roomCode].users.find(user => user.uid === userId);
+  if (!user) {
+    console.log('user not found');
+    return;
+  }
   user.readyStatus = !user.readyStatus;
   console.log('update ready for userID: ', userId)
   ioInstance.to(roomCode).emit('update-room', userMap(roomCode));
