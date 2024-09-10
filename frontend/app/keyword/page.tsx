@@ -53,6 +53,7 @@ export default function Home() {
     localStorage.setItem('username', name);
     localStorage.setItem('userId', userId);
     localStorage.setItem('isHost', 'true');
+    localStorage.setItem('readyStatus', 'false');
 
     const newCode = generateRoomCode();
 
@@ -66,7 +67,7 @@ export default function Home() {
     localStorage.setItem('isHost', "false");
     localStorage.setItem('username', name);
     localStorage.setItem('userId', userId);
-
+    localStorage.setItem('readyStatus', 'false');
   }
 
   useEffect(() => {

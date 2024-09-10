@@ -4,7 +4,7 @@ import Rules from "@/components/keyword/rules/Rules";
 
 // need timer, player identity, word and category
 interface PlayerIdentityProps {
-  timer: number;
+  timer: string;
   identity: string;
   word: string;
   category: string;

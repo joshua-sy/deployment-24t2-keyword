@@ -1,7 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
 
-
 interface User {
   username: string;
   isHost: boolean;
@@ -71,25 +70,28 @@ const PlayerBoard: React.FC<PlayerBoardProps> = ({
   ]
   return (
     <>
-      <div className='playerBoardContainer rounded-xl bg-faded-max-white max-h-80 overflow-auto'>
+      <div className='playerBoardContainer rounded-xl bg-faded-max-white max-h-80 overflow-auto font-bold'>
         <div className='playerBoard opacity-100'>
-            <div className='px-5 py-3 text-sm'>
-              <div className='text-white flex justify-between'>
-                <div>NAME</div>
-                <div>STATUS</div>
-              </div>
+          <div className='px-5 py-3 text-sm'>
+            <div className='text-white flex justify-between'>
+              <div>NAME</div>
+              <div>STATUS</div>
             </div>
-            {FadedBorder()}
+          </div>
+          {FadedBorder()}
           {users.map((user: User, index: number) => (
-            <div key={index} className='playerContainer'>
+            <div
+              key={index}
+              className={`playerContainer transition-colors duration-300 ${user.readyStatus ? '' : 'bg-[#972828] bg-opacity-50'}`}
+            >
               <div className='flex justify-between py-4 px-5 text-lg items-center'>
                 <div className='playerName flex items-center'>
-                  <Image src="/icons/playerIcon.svg" alt="playerIcon" width={30} height={30}/>
+                  <Image src="/icons/playerIcon.svg" alt="playerIcon" width={30} height={30} />
                   <div className='px-3 text-white'>
                     {user.username}
-                   </div>
-                   <div>
-                    {user.isHost && <Image src="/icons/crown.svg" alt="hostIcon" width={20} height={20}/>}
+                  </div>
+                  <div>
+                    {user.isHost && <Image src="/icons/crown.svg" alt="hostIcon" width={20} height={20} />}
                   </div>
                 </div>
                 <div className='playerStatus text-white'>
@@ -101,7 +103,7 @@ const PlayerBoard: React.FC<PlayerBoardProps> = ({
           ))}
         </div>
       </div>
-      
+
     </>
   )
 
@@ -110,7 +112,7 @@ const PlayerBoard: React.FC<PlayerBoardProps> = ({
 const FadedBorder = () => {
   return (
     <div className='fadedBorder border-2 w-full border-faded-mid-white'>
-      
+
     </div>
   )
 }
