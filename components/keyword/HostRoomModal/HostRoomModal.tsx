@@ -6,6 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import RedButton from '../redButton/RedButton';
+import { relative } from 'path';
 
 interface FormModalProps {
     onSubmit: (name: string) => void;
@@ -45,8 +46,8 @@ export default function HostRoomModal({ onSubmit }: FormModalProps) {
           onSubmit: handleSubmit
         }}
       >
-        <DialogContent>
-          <DialogContentText>
+        <DialogContent style = {{position: "relative", top: "8px"}}>
+          <DialogContentText style = {{textAlign: "center"}}>
             Enter Name
           </DialogContentText>
           <TextField
@@ -55,14 +56,28 @@ export default function HostRoomModal({ onSubmit }: FormModalProps) {
             margin="dense"
             id="name"
             name="name"
-            label="Name"
+            placeholder="Scientist"
             fullWidth
-            variant="standard"
+
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleClickOpen} type="submit">HOST</Button>
+        <Button 
+              onClick={handleClose}
+              style={{ 
+                position: 'absolute',
+                top: '8px',
+                right: '8px',
+                minWidth: '30px', 
+                padding: '0', 
+                fontSize: '16px', 
+                color: 'black', 
+                backgroundColor: 'transparent' 
+              }}
+            >
+              X
+            </Button>
+          <Button onClick={handleClickOpen} type="submit" type="submit" style = {{right: '4px', color: 'white', backgroundColor: "red", justifyContent: 'center', position: 'relative', bottom: 0, width: '100%'}}>HOST</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>
