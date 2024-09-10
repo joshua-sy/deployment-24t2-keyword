@@ -40,7 +40,6 @@ const GameRoom = ({
   }, [selectedCategory, selectedCyborg, selectedTime]);
 
   const handleReady = (roomCode: String, userId: string) => {
-    console.log('handle ready function ', roomCode, userId)
     socket.emit('update-ready', roomCode, userId, (usersInRoom: any) => {
       setUsers(usersInRoom);
     });
@@ -76,10 +75,6 @@ const GameRoom = ({
     });
     console.log('Selected time:', value);
   };
-
-  useEffect(() => {
-    console.log('Updated state:', { selectedCategory, selectedCyborg, selectedTime });
-  }, [selectedCategory, selectedCyborg, selectedTime]);
   
   // Listen for updates to the room's user list
   const handleUpdateRoom = (usersInRoom: any) => {
@@ -97,7 +92,6 @@ const GameRoom = ({
   }
 
   const findNewHost = () => {
-    console.log(users);
     for (let user of users) {
       console.log(`${user.username}`);
       if (!user.isHost) {
@@ -131,10 +125,12 @@ const GameRoom = ({
   useEffect(() => {
     if (roomCode && username && userId) {
       if (isHost) {
-        socket.emit("check-room-exist", roomCode, (returnMessage: any) => {
-          if (returnMessage.error) {
+        socket.emit("check-room-exist", roomCode, (returnValue: any) => {
+          if (returnValue.error) {
             // if there is no existing room then create it.
             socket.emit('create-room', username, userId, roomCode);
+          } else {
+            setUsers(returnValue);
           }
         });
       } else {
@@ -150,18 +146,18 @@ const GameRoom = ({
         });
       }
 
-      socket?.emit('join-room', roomCode, username, userId, (usersInRoom: any) => {
-        if (usersInRoom.error) {
-          alert(usersInRoom.error);
-          return;
-        }
-        setUsers(usersInRoom);
-      });
-
+      if (!isHost) {
+        socket?.emit('join-room', roomCode, username, userId, (usersInRoom: any) => {
+          if (usersInRoom.error) {
+            alert(usersInRoom.error);
+            return;
+          }
+          setUsers(usersInRoom);
+        });
+      }
 
       socket.on('update-room', handleUpdateRoom);
 
-      
       socket.on('game-start', handleGameStart)
 
       return () => {
