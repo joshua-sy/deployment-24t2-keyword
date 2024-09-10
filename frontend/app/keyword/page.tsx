@@ -72,7 +72,6 @@ export default function Home() {
 
   useEffect(() => {
     if (roomCodeToCheck && name) {
-      const userId = uuidv4(); // Generate a unique user ID
       socket?.emit("check-room-exist", roomCodeToCheck, (returnMessage: any) => {
         if (returnMessage.error) {
           alert(returnMessage.error);
