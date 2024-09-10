@@ -1,0 +1,110 @@
+Stadium
+Sport Arena
+Castle
+Passenger Train
+Airport
+Bus Station
+Subway Station
+Harbor
+Amusement Park
+Theme Park
+Zoo
+Aquarium
+Museum
+Library
+School
+University
+Hospital
+Clinic
+Pharmacy
+Police Station
+Fire Station
+Post Office
+Shopping Mall
+Supermarket
+Grocery Store
+Restaurant
+Cafe
+Bar
+Hotel
+Motel
+Hostel
+Beach Resort
+Mountain Lodge
+Campground
+National Park
+Forest Reserve
+Desert
+Canyon
+Waterfall
+Lake
+River
+Bridge
+Tunnel
+Highway
+City Park
+Skyscraper
+Office Building
+Factory
+Warehouse
+Apartment Complex
+Suburban House
+Townhouse
+Farmhouse
+Barn
+Stable
+Vineyard
+Orchard
+Fishing Pier
+Lighthouse
+Boat Dock
+Cruise Ship
+Cargo Ship
+Yacht
+Ferry Terminal
+Gas Station
+Parking Lot
+Car Dealership
+Garage
+Railway Station
+Train Depot
+Bus Terminal
+Taxi Stand
+Helipad
+Control Tower
+Airplane Hangar
+Race Track
+Golf Course
+Tennis Court
+Soccer Field
+Basketball Court
+Baseball Stadium
+Football Field
+Cricket Ground
+Ice Skating Rink
+Ski Resort
+Mountain Peak
+Volcano
+Coral Reef
+Island
+Archipelago
+Cave
+Cliff
+Monument
+Statue
+Fountain
+Clock Tower
+Cathedral
+Temple
+Mosque
+Church
+Chapel
+Synagogue
+Fortress
+Palace
+Embassy
+Consulate
+Parliament Building
+City Hall
+Courthouse
+Prison

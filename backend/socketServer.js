@@ -1,9 +1,9 @@
 let ioInstance;
 let rooms = {};
 
-const generateRandomWord = require('./server');
 
 function initializeSocketServer(server) {
+
   if (ioInstance) return ioInstance;
 
   const { Server } = require('socket.io');
@@ -22,11 +22,12 @@ function initializeSocketServer(server) {
         host: uid,
         users: [{ socket: socket.id, username, uid, readyStatus: false, roundLoaded: false }],
         gameStart: false,
-        timer: 240,
+        timer: 3,
         intervalId: null
       };
 
       socket.join(roomCode);
+      ioInstance.to(roomCode).emit('update-room', userMap(roomCode));
       console.log(`${username} created room: ${roomCode}`);
       console.log(rooms);
     });
@@ -49,13 +50,11 @@ function initializeSocketServer(server) {
             roundLoaded: false
           });
         } else {
+          console.log("update socket id for user ", username, " to ", socket.id);
           existingUser.socket = socket.id;
         }
     
         socket.join(roomCode);
-        
-        console.log(`${username} joined room: ${roomCode}`);
-        console.log('users in room ', roomCode, ' are ', rooms[roomCode].users)
     
         const usersInRoom = userMap(roomCode);
 
@@ -73,31 +72,32 @@ function initializeSocketServer(server) {
       updateReady(roomCode, userId);
     });
 
-    // socket.on('disconnect', () => {
-    //   console.log('disconnect is called')
-    //   for (const roomCode in rooms) {
-    //     const userIndex = rooms[roomCode].users.findIndex(user => user.socket === socket.id);
-    //     if (userIndex !== -1) {
-    //         rooms[roomCode].users.splice(userIndex, 1);
+    socket.on('disconnect', () => {
+      console.log('disconnect is called')
+      for (const roomCode in rooms) {
+        const userIndex = rooms[roomCode].users.findIndex(user => user.socket === socket.id);
+        if (userIndex !== -1) {
+            rooms[roomCode].users.splice(userIndex, 1);
 
-    //         ioInstance.to(roomCode).emit('update-room', userMap(roomCode));
+            ioInstance.to(roomCode).emit('update-room', userMap(roomCode));
 
 
-    //         if (rooms[roomCode].users.length === 0) {
-    //             delete rooms[roomCode];
-    //             console.log(`Room ${roomCode} deleted as it is now empty.`);
-    //         }
+            if (rooms[roomCode].users.length === 0) {
+              clearInterval(rooms[roomCode].intervalId);
+              delete rooms[roomCode];
+              console.log(`Room ${roomCode} deleted as it is now empty.`);
+            }
 
-    //         break;
-    //     }       
-    //   }
-    // });
+            break;
+        }       
+      }
+    });
 
     socket.on('check-room-exist', (roomCode, callback) => {
       if (!rooms[roomCode]) {
         callback({ error: `Room ${roomCode} does not exist.` });
       } else {
-        callback({ success: `Room ${roomCode} exists.` });
+        callback(userMap(roomCode));
       }
     });
 
@@ -121,6 +121,7 @@ function initializeSocketServer(server) {
 
             // If the room is empty, delete it
             if (rooms[roomCode].users.length === 0) {
+                clearInterval(rooms[roomCode].intervalId);
                 delete rooms[roomCode];
                 console.log(`Room ${roomCode} deleted as it is now empty.`);
             }
@@ -138,45 +139,87 @@ function initializeSocketServer(server) {
         let intervalId = null
         if (allUsersLoaded) {
           intervalId = setInterval(() => {
-            if (rooms[roomCode].timer > 0) {
+            if (rooms[roomCode] && rooms[roomCode].timer > 0) {
               rooms[roomCode].timer--;
-              console.log('timer is now',  rooms[roomCode].timer);
+              // console.log('timer is now',  rooms[roomCode].timer);
               ioInstance.to(roomCode).emit('countdown-update', rooms[roomCode].timer);
             } else {
               // clear the interval once it reaches 0
               clearInterval(intervalId);
               ioInstance.to(roomCode).emit('countdown-update', rooms[roomCode].timer);
+              ioInstance.to(roomCode).emit('game-end');
               rooms[roomCode].intervalId = null;
             }
           }, 1000)
         }
         // store the interval ID for the room.
         rooms[roomCode].intervalId = intervalId
-        
       }
     });
 
     // The socket that will take the signal when host clicks start game
     socket.on('all-ready', (roomCode, userId) => {
       // maybe add a check if user is actually host here
-      // and if all users are ready
 
-      // but we r gonna be naive for now and just say all are ready
       console.log('roooms in all-ready', rooms[roomCode])
       rooms[roomCode].gameStart = true;
       ioInstance.to(roomCode).emit('game-start');
     });
 
     socket.on('get-word', (roomCode, categoryName) => {
-      // const word = generateRandomWord(categoryName);
-      // ioInstance.to(roomCode).emit('word-generated', word);
+      const generateRandomWord = require('./server');
+      generateRandomWord(categoryName, (err, word) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        console.log('word generated is ', word)
+        ioInstance.to(roomCode).emit('word-generated', word);
+      });
+    });
+
+    socket.on('generate-identity', (roomCode, numCyborgs) => {
+      const room = rooms[roomCode];
+      if (!room) {
+        console.log('Room not found');
+        return;
+      }
+
+      if (room.identitiesGenerated === undefined) {
+        room.identitiesGenerated = false;
+      }
+      
+      if (room.identitiesGenerated) {
+        console.log('Identities have already been generated for this room');
+        return;
+      }
+    
+      const allUsersLoaded = room.users.every(user => user.roundLoaded === true);
+      if (allUsersLoaded) {
+        const users = rooms[roomCode].users;
+        const identities = Array(numCyborgs).fill('CYBORG');
+        const numScientists = users.length - numCyborgs;
+        identities.push(...Array(numScientists).fill('SCIENTIST'));
+        shuffleArray(identities);
+        for (let i = 0; i < users.length; i++) {
+          ioInstance.to(users[i].socket).emit('identity-generated', identities[i]);
+        }
+      } else {
+        console.log('not all users are loaded');
+      }
     });
   });
-
-
-
   console.log('Socket.IO server initialized');
   return ioInstance;
+}
+
+// randomise the order of the identities
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
 }
 
 function updateReady(roomCode, userId) {
