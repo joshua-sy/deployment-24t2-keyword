@@ -105,12 +105,12 @@ export default function Home() {
 
           {/* The original page will be hidden once the 'HOW TO PLAY' button is clicked */}
           {!showRules && (
-            <div className='space-y-20 sm:space-y-6'>
+            <div className='space-y-10 sm:space-y-8'>
               <div className="titleContainer py-10">
-                <h1 className="welcomeText text-white text-7xl"> WELCOME </h1>
-                <h1 className="toText text-white text-7xl"> TO </h1>
+                <h1 className="welcomeText text-white text-6xl sm:text-7xl"> WELCOME </h1>
+                <h1 className="toText text-white text-6xl sm:text-7xl"> TO </h1>
                 <div className="keywordDiv border-4 border-white rounded-3xl p-8 ">
-                  <h1 className="keyWordText text-white text-7xl"> KEYWORD </h1>
+                  <h1 className="keyWordText text-white text-6xl sm:text-7xl"> KEYWORD </h1>
                 </div>
               </div>
               <div>
