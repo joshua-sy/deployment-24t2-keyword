@@ -100,13 +100,12 @@ export default function Home() {
   return (
     <>
       <div className="backgroundDiv bg-robot bg-cover h-screen bg-center-left-px" >
-        {/* Width is fixed to 500 pixels for now */}
-        <div className={`contentContainer text-center w-[500px] mx-auto transition-all duration-500 ease-in-out 
+        <div className={`contentContainer text-center w-full max-w-lg mx-auto transition-all duration-500 ease-in-out 
           ${showRules ? 'opacity-0 translate-y-10' : 'opacity-100 translate-y-0'}`}>
 
           {/* The original page will be hidden once the 'HOW TO PLAY' button is clicked */}
           {!showRules && (
-            <div>
+            <div className='space-y-20 sm:space-y-6'>
               <div className="titleContainer py-10">
                 <h1 className="welcomeText text-white text-7xl"> WELCOME </h1>
                 <h1 className="toText text-white text-7xl"> TO </h1>
