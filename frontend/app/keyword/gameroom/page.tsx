@@ -12,7 +12,7 @@ import PlayerBoard from '@/components/keyword/playerBoard/playerBoard';
 import { useRouter } from "next/navigation";
 import { useRef } from 'react';
 
-const socket = io('http://localhost:4000');
+const socket = io('https://backend-thrumming-brook-424.fly.dev/');
 
 const GameRoom = ({
   searchParams
