@@ -9,7 +9,7 @@ import RoundOver from '@/components/keyword/roundOver/RoundOver';
 import { useRef } from 'react';
 import LoadingModal from '@/components/keyword/LoadingModal/LoadingModal';
 
-const socket = io('https://backend-thrumming-brook-424.fly.dev/');
+const socket = io('http://localhost:3001');
 
 const GameRoom = ({
   searchParams
@@ -104,10 +104,7 @@ const GameRoom = ({
         setCountdown(formattedTime);
       });
 
-      if (isHost) {
-        socket.emit('get-word', roomCode, category.toLowerCase());
-      }
-
+      socket.emit('get-word', roomCode, category.toLowerCase());
       socket.emit('generate-identity', roomCode, numCyborgs);
 
       socket.on('word-generated', (word: string) => {
@@ -148,7 +145,7 @@ const GameRoom = ({
     <>
       <div className="backgroundDiv h-screen bg-cover bg-center-left-px" style={{ backgroundImage: 'url(/robotBackground.png)' }}>
         {/* Add currWord.current === 'No WORD' once bug fixed */}
-        {currIdentity.current === 'No Identity' || countdown === '' ? <LoadingModal /> : null}
+        {currIdentity.current === 'No Identity' || countdown === '' || currWord.current === 'NO WORD' ? <LoadingModal /> : null}
         <PlayerIdentity timer={countdown} identity={currIdentity.current} word={currWord.current} category={category} isHost={isHost} roomCode={roomCode} socket={socket} />
         {isRoundOver && <RoundOver onReturnToLobby={returnToLobby} onExitRoom={exitRoom} />}
       </div>

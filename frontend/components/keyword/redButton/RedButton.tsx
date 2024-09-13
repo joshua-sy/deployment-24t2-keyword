@@ -17,9 +17,9 @@ const RedButton: React.FC<redButtonProps> = ({
     hoverSoundRef.current = new Audio('/soundEffects/redButtonHoverSoundEffect.mp3');
   }, []);
 
-  const handleHover = () => {
-    hoverSoundRef.current?.play();
-  }
+  // const handleHover = () => {
+  //   hoverSoundRef.current?.play();
+  // }
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     clickSoundRef.current?.play();
@@ -35,7 +35,7 @@ const RedButton: React.FC<redButtonProps> = ({
         <button
           className={"bg-figma-red border-black border-2 text-white text-2xl font-bold py-2 px-4 rounded w-[400px] hover:bg-red-600"}
           onClick={handleClick}
-          onMouseEnter={handleHover}
+          // onMouseEnter={handleHover}
         >
           {label}
         </button>
