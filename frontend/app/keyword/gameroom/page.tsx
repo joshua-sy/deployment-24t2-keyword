@@ -195,7 +195,7 @@ const GameRoom = ({
 
   return (
     <>
-      <div className="\backgroundDiv bg-robot bg-cover h-screen bg-center-left-px">
+      <div className="\backgroundDiv bg-robot bg-cover bg-fixed h-screen bg-center-left-px">
         <div className="contentContainer text-center w-full max-w-md mx-auto backdrop-blur-sm space-y-6 lg:space-y-16 2xl:space-y-0">
           <h1 className='text-white text-xl md:text-2xl lg:text-3xl 2xl:text-2xl'>Welcome to the Game Room</h1>
           <p className='text-white text-xl md:text-2xl lg:text-3xl 2xl:text-2xl'>CODE: {roomCode}</p>

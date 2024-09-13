@@ -99,7 +99,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="backgroundDiv bg-robot bg-cover h-screen bg-center-left-px flex justify-center" >
+      <div className="backgroundDiv bg-robot bg-cover h-screen bg-center-left-px flex justify-center no-scroll" >
         <div className={`contentContainer text-center w-full max-w-full mx-auto transition-all duration-500 ease-in-out 
           ${showRules ? 'opacity-0 translate-y-8' : 'opacity-100 translate-y-0'}`}>
 
@@ -126,7 +126,7 @@ export default function Home() {
 
         {/* The game rules are shown once the 'HOW TO PLAY' button is clicked */}
         {showRules && (
-          <div className="absolute inset-0 backdrop-blur-sm">
+          <div className="absolute inset-0 no-scroll backdrop-blur-sm">
             <div className="rulesContainer fixed bottom-0 w-full max-w-xl mx-auto h-[60vh] md:h-[55vh] lg:h-[35vh] 2xl:h-[60vh] bg-[#0C2820] z-10 border-[10px] border-black rounded-tl-3xl rounded-tr-3xl animate-slide-up">
               <Rules title="HOW TO PLAY" content={howToPlayContent} onClose={handleHideRules} />
             </div>
