@@ -47,18 +47,13 @@ body {
   animation: slide-up 0.5s ease-in-out;
   max-width: 100%;
   width: 100%;
-  margin: 0 auto;
-  height: 65vh;
+  margin: 0 auto; 
 }
 
 html, body {
     overflow-x: hidden;
     margin: 0;
     padding: 0;
-}
-  
-.absolute {
-    overflow: hidden;
 }
 
 .no-scroll {
