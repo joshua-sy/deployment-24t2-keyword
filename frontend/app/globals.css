@@ -48,17 +48,12 @@ body {
   max-width: 100%;
   width: 100%;
   margin: 0 auto;
-  height: 65vh;
 }
 
 html, body {
-    overflow-x: hidden;
+    overflow: hidden;
     margin: 0;
     padding: 0;
-}
-  
-.absolute {
-    overflow: hidden;
 }
 
 .no-scroll {

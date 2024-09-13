@@ -106,7 +106,7 @@ export default function PlayerIdentity({ timer, identity, word, category, isHost
 
       {showRules && (
         <div className="absolute inset-0 backdrop-blur-sm">
-          <div className="rulesContainer fixed bottom-0 w-full max-w-xl mx-auto h-[65vh] sm:h-[70vh] bg-[#0C2820] z-10 border-[10px] border-black rounded-tl-3xl rounded-tr-3xl animate-slide-up">
+          <div className="rulesContainer fixed bottom-0 w-full max-w-xl mx-auto h-[40vh] md:h-[40vh] lg:h-[30vh] 2xl:h-[50vh] bg-[#0C2820] z-10 border-[10px] border-black rounded-tl-3xl rounded-tr-3xl animate-slide-up">
             <Rules title="HOW TO PLAY" content={howToPlayContent} onClose={handleHideRules} />
           </div>
         </div>
