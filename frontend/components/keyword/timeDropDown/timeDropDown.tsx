@@ -14,7 +14,7 @@ const options = [
 
 export default function TimeDropDown({ onSelect }: { onSelect: (time: string) => void }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [selectedIndex, setSelectedIndex] = React.useState(1);
   const open = Boolean(anchorEl);
   const handleClickListItem = (event: any) => {
     setAnchorEl(event.currentTarget);
