@@ -27,8 +27,8 @@ const GameRoom = ({
   const time = searchParams.time;
 
   const [users, setUsers] = useState<{
-    roundLoaded: boolean; username: string; isHost: boolean; readyStatus: boolean; 
-}[]>([]);
+    roundLoaded: boolean; username: string; isHost: boolean; readyStatus: boolean;
+  }[]>([]);
   const router = useRouter();
   const [userId, setUserId] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
@@ -63,7 +63,7 @@ const GameRoom = ({
   }
 
   useEffect(() => {
-    if (roomCode && username && userId) {   
+    if (roomCode && username && userId) {
       socket.emit("check-room-exist", roomCode, (returnMessage: any) => {
         // If it can't find a room, then room does not exist.
         if (returnMessage.error) {
@@ -146,11 +146,11 @@ const GameRoom = ({
 
   return (
     <>
-      <div className="backgroundDiv h-screen bg-cover bg-center" style={{ backgroundImage: 'url(/robotBackground.png)' }}>
+      <div className="backgroundDiv h-screen bg-cover bg-center-left-px" style={{ backgroundImage: 'url(/robotBackground.png)' }}>
         {/* Add currWord.current === 'No WORD' once bug fixed */}
         {currIdentity.current === 'No Identity' || countdown === '' ? <LoadingModal /> : null}
-        <PlayerIdentity timer={countdown} identity={currIdentity.current} word={currWord.current} category={category} isHost={isHost} roomCode={roomCode} socket={socket}/>
-        {isRoundOver && <RoundOver onReturnToLobby={returnToLobby} onExitRoom={exitRoom}/>}
+        <PlayerIdentity timer={countdown} identity={currIdentity.current} word={currWord.current} category={category} isHost={isHost} roomCode={roomCode} socket={socket} />
+        {isRoundOver && <RoundOver onReturnToLobby={returnToLobby} onExitRoom={exitRoom} />}
       </div>
     </>
   );

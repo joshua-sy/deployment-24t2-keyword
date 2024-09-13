@@ -13,7 +13,7 @@ interface PlayerIdentityProps {
   socket: any;
 }
 
-export default function PlayerIdentity({timer, identity, word, category, isHost, socket, roomCode}: PlayerIdentityProps) {
+export default function PlayerIdentity({ timer, identity, word, category, isHost, socket, roomCode }: PlayerIdentityProps) {
   const scientistRuleContent = `
   EVERYBODY TAKES TURNS SAYING A WORD CORRELATING TO THE WORD GIVEN.
 
@@ -77,9 +77,9 @@ export default function PlayerIdentity({timer, identity, word, category, isHost,
   return (
     <>
       <div className={`contentContainer mx-auto transition-all duration-500 ease-in-out
-      ${showRules ? 'opacity-0 translate-y-3' : 'opacity-100 translate-y-0'}`}>
+      ${showRules ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}`}>
         {!showRules && (
-          <div className="flex flex-col items-center justify-center text-white text-center font-bold">
+          <div className="flex flex-col items-center justify-center text-white text-center font-bold space-y-10 p-8 md:space-y-12 lg:space-y-32 2xl:space-y-2 2xl:p-0">
             <div className="timeLeftContainer mt-4 p-4 border-[3px] border-black rounded-lg bg-[#289773] bg-opacity-70 w-[280px] p-3">
               <div className="flex items-center space-x-2">
                 <h2 className="text-2xl">TIME LEFT: {timer}</h2>
@@ -99,7 +99,7 @@ export default function PlayerIdentity({timer, identity, word, category, isHost,
             <div className="redButtonContainer mt-3">
               <RedButton label="WHAT TO DO" onClick={handleShowRules} />
             </div>
-            {isHost && <RedButton label="END GAME" onClick={handleEndGame}/>}
+            {isHost && <RedButton label="END GAME" onClick={handleEndGame} />}
           </div>
         )}
       </div >
