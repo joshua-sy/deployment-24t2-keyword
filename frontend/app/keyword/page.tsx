@@ -85,7 +85,7 @@ export default function Home() {
   }, [roomCodeToCheck, name, router]);
 
   useEffect(() => {
-    const newSocket: Socket<DefaultEventsMap, DefaultEventsMap> = io('http://localhost:3001');
+    const newSocket: Socket<DefaultEventsMap, DefaultEventsMap> = io('https://backend-thrumming-brook-424.fly.dev/');
     setSocket(newSocket);
 
     newSocket.on('connect', () => {
