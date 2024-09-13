@@ -9,7 +9,7 @@ import RoundOver from '@/components/keyword/roundOver/RoundOver';
 import { useRef } from 'react';
 import LoadingModal from '@/components/keyword/LoadingModal/LoadingModal';
 
-const socket = io('http://localhost:4000');
+const socket = io('https://backend-thrumming-brook-424.fly.dev/');
 
 const GameRoom = ({
   searchParams
