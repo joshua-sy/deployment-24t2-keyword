@@ -4,8 +4,8 @@ const http = require('http');
 const server = http.createServer();
 initializeSocketServer(server);
 
-server.listen(4000, () => {
-  console.log('Server is running on port 4000');
+server.listen(3000, () => {
+  console.log('Server is running on port 3000');
 });
 
 const fs = require('fs');
