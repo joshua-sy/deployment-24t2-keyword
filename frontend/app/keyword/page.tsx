@@ -99,18 +99,18 @@ export default function Home() {
 
   return (
     <>
-      <div className="backgroundDiv bg-robot bg-cover h-screen bg-center-left-px" >
-        <div className={`contentContainer text-center w-full max-w-lg mx-auto transition-all duration-500 ease-in-out 
-          ${showRules ? 'opacity-0 translate-y-10' : 'opacity-100 translate-y-0'}`}>
+      <div className="backgroundDiv bg-robot bg-cover h-screen bg-center-left-px flex justify-center" >
+        <div className={`contentContainer text-center w-full max-w-full mx-auto transition-all duration-500 ease-in-out 
+          ${showRules ? 'opacity-0 translate-y-8' : 'opacity-100 translate-y-0'}`}>
 
           {/* The original page will be hidden once the 'HOW TO PLAY' button is clicked */}
           {!showRules && (
-            <div className='space-y-10 sm:space-y-8'>
-              <div className="titleContainer py-10">
-                <h1 className="welcomeText text-white text-6xl sm:text-7xl"> WELCOME </h1>
-                <h1 className="toText text-white text-6xl sm:text-7xl"> TO </h1>
-                <div className="keywordDiv border-4 border-white rounded-3xl p-8 ">
-                  <h1 className="keyWordText text-white text-6xl sm:text-7xl"> KEYWORD </h1>
+            <div className='space-y-20 md:space-y-12 lg:space-y-35 2xl:space-y-6'>
+              <div className="titleContainer py-10 space-y-4 md:space-y-6 2xl:space-y-2">
+                <h1 className="welcomeText text-white text-6xl md:text-8xl lg:text-9xl 2xl:text-7xl"> WELCOME </h1>
+                <h1 className="toText text-white text-6xl md:text-8xl lg:text-9xl 2xl:text-7xl"> TO </h1>
+                <div className="keywordDiv border-4 border-white rounded-3xl p-8 inline-block">
+                  <h1 className="keyWordText text-white text-6xl md:text-8xl lg:text-9xl 2xl:text-7xl"> KEYWORD </h1>
                 </div>
               </div>
               <div>
