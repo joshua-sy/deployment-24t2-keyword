@@ -12,7 +12,7 @@ import PlayerBoard from '@/components/keyword/playerBoard/playerBoard';
 import { useRouter } from "next/navigation";
 import { useRef } from 'react';
 
-const socket = io('https://backend-thrumming-brook-424.fly.dev/');
+const socket = io('http://localhost:3001');
 
 const GameRoom = ({
   searchParams
@@ -58,23 +58,15 @@ const GameRoom = ({
 
   const handleCategorySelect = (value: string) => {
     setSelectedCategory(value);
-    console.log('Selected category:', value);
   };
 
   const handleCyborgSelect = (value: string) => {
     setSelectedCyborg(value);
-    console.log('Selected cyborg:', value);
   };
 
   const handleTimeSelect = (value: string) => {
     setSelectedTime(value);
-    console.log('CURR VALUES', {
-      roomCode,
-      selectedCategory,
-      selectedCyborg,
-      selectedTime
-    });
-    console.log('Selected time:', value);
+    socket.emit('update-time', roomCode, value);
   };
 
   // Listen for updates to the room's user list
@@ -82,13 +74,13 @@ const GameRoom = ({
     setUsers(usersInRoom);
   };
 
-  const handleGameStart = () => {
+  const handleGameStart = (category, cyborg, time) => {
     console.log('Navigating with:', {
       roomCode,
       ...selectedValuesRef.current
     });
     isNavigatingRef.current = true;
-    router.push(`/keyword/round?roomCode=${roomCode}&category=${selectedValuesRef.current.selectedCategory}&cyborg=${selectedValuesRef.current.selectedCyborg}&time=${selectedValuesRef.current.selectedTime}`);
+    router.push(`/keyword/round?roomCode=${roomCode}&category=${category}&cyborg=${cyborg}&time=${time}`);
     // router.push(`/keyword/round?roomCode=${roomCode}`);
   }
 
@@ -161,7 +153,9 @@ const GameRoom = ({
 
       socket.on('update-room', handleUpdateRoom);
 
-      socket.on('game-start', handleGameStart)
+      socket.on('game-start', (category, cyborg, time) => {
+        handleGameStart(category, cyborg, time);
+      });
 
       return () => {
         if (!isNavigatingRef.current) {
@@ -178,10 +172,9 @@ const GameRoom = ({
   }, [roomCode, username, userId]);
 
   const signalAllReady = () => {
-    // router.push(`/keyword/round?roomCode=${roomCode}`);
     if (allReady) {
       isNavigatingRef.current = true;
-      socket.emit('all-ready', roomCode, userId);
+      socket.emit('all-ready', roomCode, selectedCategory, selectedCyborg, selectedTime);
     }
   }
 
