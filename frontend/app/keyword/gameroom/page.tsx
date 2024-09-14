@@ -34,7 +34,7 @@ const GameRoom = ({
   const [selectedCyborg, setSelectedCyborg] = useState<string>('1');
   const [selectedTime, setSelectedTime] = useState<string>('4 min');
   const isNavigatingRef = useRef(false);
-  
+
   // for leave room to change color icon 
   // const [isHoveredLeave, setIsHoveredLeave] = useState(false);
 
@@ -201,9 +201,9 @@ const GameRoom = ({
 
   return (
     <>
-      <div className="\backgroundDiv bg-robot bg-cover bg-fixed h-screen bg-center-left-px">
+      <div className="backgroundDiv bg-robot bg-cover bg-fixed h-screen bg-center-left-px">
         <div className="gameroomContentContainer text-center w-full max-w-md max-h-screen overflow-auto mx-auto backdrop-blur-sm space-y-6 lg:space-y-16 2xl:space-y-0">
-          <LeaveRoomIcon handleClick={leaveRoom}/>
+          <LeaveRoomIcon handleClick={leaveRoom} />
           <div className='flex justify-center items-center text-white text-center font-bold'>
             <div className="roomcodeContainer mt-4 mb-4 p-4 border-[3px] border-black rounded-lg bg-[#289773] bg-opacity-70 w-[280px]">
               <div className="flex justify-center items-center space-x-2">
