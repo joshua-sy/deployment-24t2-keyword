@@ -50,6 +50,10 @@ body {
   margin: 0 auto; 
 }
 
+.gameroomContentContainer::-webkit-scrollbar {
+    display: none;
+}
+
 html, body {
     overflow-x: hidden;
     margin: 0;
