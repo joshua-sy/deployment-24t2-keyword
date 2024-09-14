@@ -9,7 +9,7 @@ function initializeSocketServer(server) {
   const { Server } = require('socket.io');
   ioInstance = new Server(server, {
     cors: {
-      origin: ['http://localhost:3000', 'https://trainee-warden-24t2-keyword.vercel.app', 'http://localhost:3001'],
+      origin: ['http://localhost:3000', 'https://trainee-warden-24t2-keyword.vercel.app', 'http://localhost:3001', 'https://warden-games.vercel.app'],
       methods: ["GET", "POST"]
     },
   });
