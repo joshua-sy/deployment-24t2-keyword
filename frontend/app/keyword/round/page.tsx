@@ -143,7 +143,7 @@ const GameRoom = ({
 
   return (
     <>
-      <div className="backgroundDiv h-screen bg-cover bg-center-left-px" style={{ backgroundImage: 'url(/robotBackground.png)' }}>
+      <div className="backgroundDiv h-screen bg-cover bg-fixed bg-center-left-px" style={{ backgroundImage: 'url(/robotBackground.png)' }}>
         {/* Add currWord.current === 'No WORD' once bug fixed */}
         {currIdentity.current === 'No Identity' || countdown === '' || currWord.current === 'NO WORD' ? <LoadingModal /> : null}
         <PlayerIdentity timer={countdown} identity={currIdentity.current} word={currWord.current} category={category} isHost={isHost} roomCode={roomCode} socket={socket} />
