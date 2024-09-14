@@ -11,6 +11,7 @@ import StartButton from '@/components/keyword/startButton/startButton';
 import PlayerBoard from '@/components/keyword/playerBoard/playerBoard';
 import { useRouter } from "next/navigation";
 import { useRef } from 'react';
+import LeaveRoomIcon from '@/components/keyword/leaveRoomIcon/LeaveRoomIcon';
 
 const socket = io('https://backend-thrumming-brook-424.fly.dev/');
 
@@ -33,6 +34,10 @@ const GameRoom = ({
   const [selectedCyborg, setSelectedCyborg] = useState<string>('1');
   const [selectedTime, setSelectedTime] = useState<string>('4 min');
   const isNavigatingRef = useRef(false);
+  
+  // for leave room to change color icon 
+  // const [isHoveredLeave, setIsHoveredLeave] = useState(false);
+
 
   const selectedValuesRef = useRef({ selectedCategory, selectedCyborg, selectedTime });
 
@@ -186,10 +191,19 @@ const GameRoom = ({
     });
   };
 
+  const leaveRoom = () => {
+    socket.emit('leave-room', roomCode, userId);
+    //  removes all local storage items
+    localStorage.clear();
+    router.push('/keyword');
+
+  }
+
   return (
     <>
       <div className="\backgroundDiv bg-robot bg-cover bg-fixed h-screen bg-center-left-px">
         <div className="contentContainer text-center w-full max-w-md mx-auto backdrop-blur-sm space-y-6 lg:space-y-16 2xl:space-y-0">
+          <LeaveRoomIcon handleClick={leaveRoom}/>
           <h1 className='text-white text-xl md:text-2xl lg:text-3xl 2xl:text-2xl'>Welcome to the Game Room</h1>
           <p className='text-white text-xl md:text-2xl lg:text-3xl 2xl:text-2xl'>CODE: {roomCode}</p>
           <RedButton
