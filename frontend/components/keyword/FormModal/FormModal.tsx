@@ -65,7 +65,7 @@ export default function FormModal({ onSubmit }: FormModalProps) {
             name="code"
             placeholder = "1234"
             fullWidth
-            inputProps={{ style: { textTransform: 'uppercase' } }}
+            inputProps={{ style: { textTransform: 'uppercase' }}}
             onChange={handleChange}
           />
         </DialogContent>
@@ -83,8 +83,6 @@ export default function FormModal({ onSubmit }: FormModalProps) {
             fullWidth
             placeholder="Scientist"
             type = "text"
-            inputProps={{ style: { textTransform: 'uppercase' } }}
-            onChange={handleChange}
           />
         </DialogContent>
         <DialogActions>
