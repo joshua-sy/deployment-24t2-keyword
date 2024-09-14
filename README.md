@@ -1,4 +1,16 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## WHAT IS KEYWORD?
+KEYWORD is a web application which uses socket.io to allow the joining and hosting of rooms, where users can gather and play a mafia-like game.
+
+## RULES OF THE GAME
+Every user is given a word correlating to the category chosen, they are a SCIENTIST. However, among one of the 
+scientists is a CYBORG, they do NOT know the word. Everybody take turns saying something that relates to the word given.
+The goal of the scientist is to figure out who the cyborg is and the goal of the cyborg is to blend in with the crowd.
+After the timer runs out, the players will choose who the cyborg is, if the cyborg is chosen, they get one chance to win by
+guessing what the word given is, so be specific but not too specific as to not let the cyborg guess the word and be generic but
+not too generic as to not get chosen as the cyborg! Have fun!
+
+## DEPLOYED LINK HERE!!
+https://trainee-warden-24t2-keyword.vercel.app/keyword
 
 ## How to run frontend
 
@@ -48,17 +60,5 @@ Then run commands to run the backend.
 node server.js
 ```
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## CONTACT US
+KJ (Backend Developer) - lowkhyejac@gmail.com
