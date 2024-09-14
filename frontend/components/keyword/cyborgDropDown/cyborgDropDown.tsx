@@ -5,21 +5,21 @@ import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 
-// make it based on user length.
 const options = [
     "1",
     "RANDOM"
 ];
 
 export default function CyborgDropDown({ onSelect }: { onSelect: (category: string) => void }) {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const open = Boolean(anchorEl);
-  const handleClickListItem = (event: any) => {
+  
+  const handleClickListItem = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleMenuItemClick = (event: any, index: number) => {
+  const handleMenuItemClick = (event: React.MouseEvent<HTMLElement>, index: number) => {
     setSelectedIndex(index);
     setAnchorEl(null);
     onSelect(options[index]);
@@ -31,10 +31,7 @@ export default function CyborgDropDown({ onSelect }: { onSelect: (category: stri
 
   return (
     <div>
-      <List
-        component="nav"
-        aria-label="Device settings"
-      >
+      <List component="nav" aria-label="Device settings">
         <ListItemButton
           id="lock-button"
           aria-haspopup="listbox"
@@ -42,13 +39,38 @@ export default function CyborgDropDown({ onSelect }: { onSelect: (category: stri
           aria-label="when device is locked"
           aria-expanded={open ? 'true' : undefined}
           onClick={handleClickListItem}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            width: '200px',
+            margin: '0 auto',  
+            backgroundColor:'#e53e3e',
+            borderRadius: '2rem',
+            border: '0.1rem solid black',
+            boxShadow: '0 0 0.5rem 0.1rem rgba(0, 0, 0, 0.2)', 
+            '&:hover': { backgroundColor: 'rgba(224, 78, 78, 0.5)' },
+          }}
         >
           <ListItemText
-            primary="CYBORG COUNT:"
+            primary="CYBORG COUNT:" 
             secondary={options[selectedIndex]}
             sx={{
-              '& .MuiListItemText-primary': { color: 'white' },   // Style for primary text
-              '& .MuiListItemText-secondary': { color: 'white' }, // Style for secondary text
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%',
+              '& .MuiListItemText-primary': { 
+                color: 'white',
+                fontWeight: 'bold',
+                fontSize: '1rem',
+                textAlign: 'center',
+              },
+              '& .MuiListItemText-secondary': { 
+                color: 'white', 
+                fontWeight: 'bold',
+                textAlign: 'center', 
+                fontSize: '1rem',
+              },
             }}
           />
         </ListItemButton>
@@ -62,12 +84,33 @@ export default function CyborgDropDown({ onSelect }: { onSelect: (category: stri
           'aria-labelledby': 'lock-button',
           role: 'listbox',
         }}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        sx={{
+          '& .MuiPaper-root': {
+            backgroundColor: '#E04E4E', 
+            width: '150px',  
+          },
+        }}
       >
         {options.map((option, index) => (
           <MenuItem
             key={option}
             selected={index === selectedIndex}
             onClick={(event) => handleMenuItemClick(event, index)}
+            sx={{
+              width: '100%',
+              backgroundColor: index === selectedIndex ? 'darkred' : 'transparent',  
+              color: 'white',
+              fontWeight: 'bold', 
+              '&:hover': { backgroundColor: index === selectedIndex ? 'darkred' : 'rgba(255, 255, 255, 0.2)' },  
+            }}
           >
             {option}
           </MenuItem>
