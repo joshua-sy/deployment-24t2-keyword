@@ -77,7 +77,7 @@ export default function HostRoomModal({ onSubmit }: FormModalProps) {
             >
               X
             </Button>
-          <Button onClick={handleClickOpen} type="submit" type="submit" style = {{right: '4px', color: 'white', backgroundColor: "red", justifyContent: 'center', position: 'relative', bottom: 0, width: '100%'}}>HOST</Button>
+          <Button onClick={handleClickOpen} type="submit" type="submit" style = {{right: '4px', color: 'white', backgroundColor: '#E04E4E', justifyContent: 'center', position: 'relative', bottom: 0, width: '100%'}}>HOST</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>

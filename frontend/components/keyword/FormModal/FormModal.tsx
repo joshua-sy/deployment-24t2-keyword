@@ -32,9 +32,13 @@ export default function FormModal({ onSubmit }: FormModalProps) {
     const name = formJson.name as string;
 
     // Call the callback function with the room code and name
-    onSubmit(code, name);
+    onSubmit(code.toUpperCase(), name.toUpperCase());
 
     handleClose();
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.target.value = event.target.value.toUpperCase();
   };
 
   return (
@@ -48,7 +52,6 @@ export default function FormModal({ onSubmit }: FormModalProps) {
           onSubmit: handleSubmit,
           style: {backgroundColor : "white", color: "black", borderRadius: "10px"}
         }}
-
       >
         <DialogContent style = {{position: "relative", top: "18px"}}>
           <DialogContentText style = {{textAlign: 'center'}}>
@@ -62,7 +65,8 @@ export default function FormModal({ onSubmit }: FormModalProps) {
             name="code"
             placeholder = "1234"
             fullWidth
-          
+            inputProps={{ style: { textTransform: 'uppercase' } }}
+            onChange={handleChange}
           />
         </DialogContent>
         <DialogContent>
@@ -79,26 +83,37 @@ export default function FormModal({ onSubmit }: FormModalProps) {
             fullWidth
             placeholder="Scientist"
             type = "text"
-
+            inputProps={{ style: { textTransform: 'uppercase' } }}
+            onChange={handleChange}
           />
         </DialogContent>
         <DialogActions>
-        <Button 
-              onClick={handleClose}
-              style={{ 
-                position: 'absolute',
-                top: '8px',
-                right: '8px',
-                minWidth: '30px', 
-                padding: '0', 
-                fontSize: '16px', 
-                color: 'black', 
-                backgroundColor: 'transparent' 
-              }}
-            >
-              X
-            </Button>
-          <Button onClick={handleClickOpen} type="submit" style = {{right: '4px', color: 'white', backgroundColor: "red", justifyContent: 'center', position: 'relative', bottom: 0, width: '100%'}}>JOIN</Button>
+          <Button 
+            onClick={handleClose}
+            style={{ 
+              position: 'absolute',
+              top: '8px',
+              right: '8px',
+              minWidth: '30px', 
+              padding: '0', 
+              fontSize: '16px', 
+              color: 'black', 
+              backgroundColor: 'transparent' 
+            }}
+          >
+            X
+          </Button>
+          <Button onClick={handleClickOpen} type="submit" 
+          style = {
+            {right: '4px',
+             color: 'white',
+              backgroundColor: "#E04E4E",
+               justifyContent: 'center',
+                position: 'relative',
+                 bottom: 0,
+                  width: '100%'}}>
+            JOIN
+          </Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>
