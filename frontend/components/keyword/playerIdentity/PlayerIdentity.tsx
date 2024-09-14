@@ -38,13 +38,13 @@ export default function PlayerIdentity({ timer, identity, word, category, isHost
   let howToPlayContent = hiddenRuleContent;
 
   if (identity === "SCIENTIST") {
-    identityImage = "/icons/scientistIcon.png";
+    identityImage = "/icons/scientistIcon.svg";
     identityText = "A SCIENTIST";
     displayedWord = `WORD: ${word}`;
     howToPlayContent = scientistRuleContent;
   }
   if (identity === "CYBORG") {
-    identityImage = "/icons/robotIcon.png";
+    identityImage = "/icons/robotIcon.svg";
     identityText = "THE CYBORG";
     displayedWord = `CATEGORY: ${category}`;
     howToPlayContent = cyborgRuleContent;
@@ -87,8 +87,8 @@ export default function PlayerIdentity({ timer, identity, word, category, isHost
               </div>
             </div>
             <div className="pictureContainer mt-4 border-[5px] border-black rounded-[20px] w-[280px] h-[280px] 
-            flex items-center justify-center bg-white bg-opacity-60">
-              <img src={currentImage} alt="Identity Icon" className="w-[265px] h-[265px]" />
+            flex items-center justify-center bg-white bg-opacity-60 relative">
+              <img src={currentImage} alt="Identity Icon" className="w-[265px] h-[265px] absolute top-2" />
             </div>
             <div className="textContainer flex flex-col space-y-1">
               <p className="text-sm underline cursor-pointer" onClick={handleHideClick}>{profileText}</p>
