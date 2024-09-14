@@ -1,17 +1,15 @@
 'use client';
 
-import RedButton from '@/components/keyword/redButton/RedButton';
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { useRouter } from "next/navigation";
-import router from 'next/navigation';
 import PlayerIdentity from '@/components/keyword/playerIdentity/PlayerIdentity';
 import RoundOver from '@/components/keyword/roundOver/RoundOver';
 import { useRef } from 'react';
 import LoadingModal from '@/components/keyword/LoadingModal/LoadingModal';
 
-const socket = io('http://localhost:4000');
+const socket = io('https://backend-thrumming-brook-424.fly.dev/');
 
 const GameRoom = ({
   searchParams
@@ -29,8 +27,8 @@ const GameRoom = ({
   const time = searchParams.time;
 
   const [users, setUsers] = useState<{
-    roundLoaded: boolean; username: string; isHost: boolean; readyStatus: boolean; 
-}[]>([]);
+    roundLoaded: boolean; username: string; isHost: boolean; readyStatus: boolean;
+  }[]>([]);
   const router = useRouter();
   const [userId, setUserId] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
@@ -65,16 +63,16 @@ const GameRoom = ({
   }
 
   useEffect(() => {
-    if (roomCode && username && userId) {   
-      // socket.emit("check-room-exist", roomCode, (returnMessage: any) => {
-      //   // If it can't find a room, then room does not exist.
-      //   if (returnMessage.error && !isHost) {
-      //     alert(returnMessage.error);
-      //     // Send them back to the home page
-      //     router.push(`/keyword`);
-      //     return;
-      //   }
-      // });
+    if (roomCode && username && userId) {
+      socket.emit("check-room-exist", roomCode, (returnMessage: any) => {
+        // If it can't find a room, then room does not exist.
+        if (returnMessage.error) {
+          alert(returnMessage.error);
+          // Send them back to the home page
+          router.push(`/keyword`);
+          return;
+        }
+      });
 
       socket?.emit('player-loaded-round', roomCode, userId, (newCountdown: any) => {
         if (newCountdown.error) {
@@ -106,10 +104,7 @@ const GameRoom = ({
         setCountdown(formattedTime);
       });
 
-      if (isHost) {
-        socket.emit('get-word', roomCode, category.toLowerCase());
-      }
-
+      socket.emit('get-word', roomCode, category.toLowerCase());
       socket.emit('generate-identity', roomCode, numCyborgs);
 
       socket.on('word-generated', (word: string) => {
@@ -148,11 +143,11 @@ const GameRoom = ({
 
   return (
     <>
-      <div className="backgroundDiv h-screen bg-cover bg-center" style={{ backgroundImage: 'url(/robotBackground.png)' }}>
+      <div className="backgroundDiv h-screen bg-cover bg-fixed bg-center-left-px" style={{ backgroundImage: 'url(/robotBackground.png)' }}>
         {/* Add currWord.current === 'No WORD' once bug fixed */}
-        {currIdentity.current === 'No Identity' || countdown === '' ? <LoadingModal /> : null}
-        <PlayerIdentity timer={countdown} identity={currIdentity.current} word={currWord.current} category={category} isHost={isHost}/>
-        {isRoundOver && <RoundOver onReturnToLobby={returnToLobby} onExitRoom={exitRoom}/>}
+        {currIdentity.current === 'No Identity' || countdown === '' || currWord.current === 'NO WORD' ? <LoadingModal /> : null}
+        <PlayerIdentity timer={countdown} identity={currIdentity.current} word={currWord.current} category={category} isHost={isHost} roomCode={roomCode} socket={socket} />
+        {isRoundOver && <RoundOver onReturnToLobby={returnToLobby} onExitRoom={exitRoom} />}
       </div>
     </>
   );

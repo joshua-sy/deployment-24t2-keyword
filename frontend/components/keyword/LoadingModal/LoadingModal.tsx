@@ -21,8 +21,7 @@ export default function LoadingModal() {
       </svg>
         {/* Loading Text */}
         <div className='py-8 text-center'>
-          <p className="mt-4 text-black text-lg font-semibold">Loading Core Memory </p>
-          <p className="mt-4 text-black text-lg font-semibold">If you are a Cyborg</p>
+          <p className="mt-4 text-black text-lg font-semibold">Loading</p>
         </div>
         
       </div>

@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface startButtonProps {
   label: string;
@@ -19,12 +19,9 @@ const StartButton: React.FC<startButtonProps> = ({
   useEffect(() => {
     clickWrongSoundRef.current = new Audio('/soundEffects/wrong.mp3');
     clickStartSoundRef.current = new Audio('/soundEffects/startButtonSound.mp3');
-    hoverSoundRef.current = new Audio('/soundEffects/redButtonHoverSoundEffect.mp3');
   }, []);
 
-  const handleHover = () => {
-    hoverSoundRef.current?.play();
-  }
+
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (allReady) {
@@ -35,15 +32,14 @@ const StartButton: React.FC<startButtonProps> = ({
     } else {
       clickWrongSoundRef.current?.play();
     }
-    
+
   };
   return (
     <>
       <div className='buttonDiv py-3'>
         <button
           onClick={handleClick}
-          onMouseEnter={handleHover}
-          className={`transition-colors duration-300 ${allReady ? 'bg-green-400 hover:bg-green-600' : 'bg-figma-red hover:bg-red-600'} border-black border-2 text-white text-2xl font-bold py-2 px-4 rounded w-[400px]`}
+          className={`transition-colors duration-300 ${allReady ? 'bg-figma-red hover:bg-red-600' : 'bg-[#661C1C] hover:bg-[#4B0A0A]'} border-black border-2 text-white text-2xl font-bold py-2 px-4 rounded w-[400px]`}
         >
           {label}
         </button>

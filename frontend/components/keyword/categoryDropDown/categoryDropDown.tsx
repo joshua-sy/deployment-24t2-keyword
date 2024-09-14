@@ -7,16 +7,10 @@ import Menu from '@mui/material/Menu';
 
 const options = [
   "CELEBRITIES",
-  "FOOD CHAINS",
-  "HISTORICAL PEOPLE",
+  "BRANDS",
   "MOVIES",
-  "SHOWS",
-  "MUSICIANS",
-  "ATHLETES",
   "ANIMALS",
   "LOCATIONS",
-  "CUSTOM",
-  "RANDOM"
 ];
 
 export default function CategoryDropDown({ onSelect }: { onSelect: (category: string) => void }) {

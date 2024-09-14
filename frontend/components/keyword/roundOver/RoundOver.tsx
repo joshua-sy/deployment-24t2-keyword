@@ -5,7 +5,7 @@ interface RoundOverProps {
   onExitRoom: () => void;
 }
 
-export default function RoundOver({onReturnToLobby, onExitRoom}: RoundOverProps) {
+export default function RoundOver({ onReturnToLobby, onExitRoom }: RoundOverProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="contentContainer bg-[#0C2820] text-white font-bold w-128 h-96 flex flex-col items-center justify-center text-center sm:mx-8 lg:mx-auto my-auto rounded-2xl border-[3px] border-black p-3">

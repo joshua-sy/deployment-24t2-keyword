@@ -9,7 +9,7 @@ function initializeSocketServer(server) {
   const { Server } = require('socket.io');
   ioInstance = new Server(server, {
     cors: {
-      origin: ['http://localhost:3000'],
+      origin: ['http://localhost:3000', 'https://trainee-warden-24t2-keyword.vercel.app', 'http://localhost:3001'],
       methods: ["GET", "POST"]
     },
   });
@@ -22,7 +22,8 @@ function initializeSocketServer(server) {
         host: uid,
         users: [{ socket: socket.id, username, uid, readyStatus: false, roundLoaded: false }],
         gameStart: false,
-        timer: 3,
+        timer: 240,
+        defaultTime: 240,
         intervalId: null
       };
 
@@ -81,7 +82,6 @@ function initializeSocketServer(server) {
 
             ioInstance.to(roomCode).emit('update-room', userMap(roomCode));
 
-
             if (rooms[roomCode].users.length === 0) {
               clearInterval(rooms[roomCode].intervalId);
               delete rooms[roomCode];
@@ -128,16 +128,48 @@ function initializeSocketServer(server) {
         }
     });
 
+    socket.on('update-time', (roomCode, time) => {
+      if (time == "2 min") {
+        time = 120;
+      } else if (time == "4 min") {
+        time = 240;
+      } else if (time == "6 min") {
+        time = 360;
+      } else if (time == "8 min") {
+        time = 480;
+      } else {
+        return;
+      }
+
+      console.log('time is', time);
+
+      if (rooms[roomCode]) {
+        rooms[roomCode].defaultTime = time;
+        rooms[roomCode].timer = time;
+        console.log('default time is now', rooms[roomCode].defaultTime);
+      }
+    });
+
     socket.on('player-loaded-round', (roomCode, userId) => {
       if (rooms[roomCode]) {
         const user = rooms[roomCode].users.find(user => user.uid === userId);
+        if (!user) {
+          console.log('user not found for round loaded');
+          return;
+        }
         user.roundLoaded = true;
         ioInstance.to(roomCode).emit('update-room', userMap(roomCode));
 
+        console.log(`yo ${rooms[roomCode].defaultTime}`);
         // loop through users and check if roundLoaded == true
         const allUsersLoaded = rooms[roomCode].users.every(user => user.roundLoaded === true);
         let intervalId = null
-        if (allUsersLoaded) {
+        if (allUsersLoaded && rooms[roomCode].gameStart) {
+          // clear existing timers
+          if (rooms[roomCode].intervalId) {
+            clearInterval(rooms[roomCode].intervalId);
+          }
+
           intervalId = setInterval(() => {
             if (rooms[roomCode] && rooms[roomCode].timer > 0) {
               rooms[roomCode].timer--;
@@ -147,8 +179,11 @@ function initializeSocketServer(server) {
               // clear the interval once it reaches 0
               clearInterval(intervalId);
               ioInstance.to(roomCode).emit('countdown-update', rooms[roomCode].timer);
-              ioInstance.to(roomCode).emit('game-end');
+              rooms[roomCode].timer = rooms[roomCode].defaultTime;
+              rooms[roomCode].gameStart = false;
+              rooms[roomCode].users.forEach(user => user.roundLoaded = false);
               rooms[roomCode].intervalId = null;
+              ioInstance.to(roomCode).emit('game-end');
             }
           }, 1000)
         }
@@ -157,25 +192,59 @@ function initializeSocketServer(server) {
       }
     });
 
+    socket.on('trigger-game-end', (roomCode) => {
+      console.log('trigger game end is called')
+      console.log(rooms[roomCode]);
+      if (rooms[roomCode]) {
+        clearInterval(rooms[roomCode].intervalId);
+        rooms[roomCode].timer = rooms[roomCode].defaultTime;
+        rooms[roomCode].intervalId = null;
+        rooms[roomCode].gameStart = false;
+        ioInstance.to(roomCode).emit('game-end');
+      }
+    });
+
     // The socket that will take the signal when host clicks start game
-    socket.on('all-ready', (roomCode, userId) => {
+    socket.on('all-ready', (roomCode, category, cyborg, time) => {
       // maybe add a check if user is actually host here
 
-      console.log('roooms in all-ready', rooms[roomCode])
       rooms[roomCode].gameStart = true;
-      ioInstance.to(roomCode).emit('game-start');
+      ioInstance.to(roomCode).emit('game-start', category, cyborg, time);
+      
+      // make all ready status false
+      rooms[roomCode].users.forEach(user => user.readyStatus = false);
     });
 
     socket.on('get-word', (roomCode, categoryName) => {
       const generateRandomWord = require('./server');
-      generateRandomWord(categoryName, (err, word) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-        console.log('word generated is ', word)
-        ioInstance.to(roomCode).emit('word-generated', word);
-      });
+      const room = rooms[roomCode];
+      if (!room) {
+        console.log('Room not found');
+        return;
+      }
+
+      if (room.wordGenerated === undefined) {
+        room.wordGenerated = false;
+      }
+      
+      if (room.wordGenerated) {
+        console.log('Identities have already been generated for this room');
+        return;
+      }
+    
+      const allUsersLoaded = room.users.every(user => user.roundLoaded === true);
+      if (allUsersLoaded) {
+        generateRandomWord(categoryName, (err, word) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          console.log('word generated is ', word)
+          ioInstance.to(roomCode).emit('word-generated', word);
+        });
+      } else {
+        console.log('not all users are loaded (generation of words)');
+      }
     });
 
     socket.on('generate-identity', (roomCode, numCyborgs) => {
@@ -195,6 +264,12 @@ function initializeSocketServer(server) {
       }
     
       const allUsersLoaded = room.users.every(user => user.roundLoaded === true);
+
+      if (numCyborgs === "RANDOM") {
+        numCyborgs = Math.floor(Math.random() * (room.users.length + 1));
+        console.log('numCyborgs is ', numCyborgs);
+      }
+
       if (allUsersLoaded) {
         const users = rooms[roomCode].users;
         const identities = Array(numCyborgs).fill('CYBORG');
@@ -225,7 +300,15 @@ function shuffleArray(array) {
 function updateReady(roomCode, userId) {
   console.log('users in updateReadyAre for roomCode are : ', rooms[roomCode])
   console.log('rooms data structure ', rooms)
+  if (!rooms[roomCode]) {
+    console.log('room not found');
+    return;
+  }
   const user = rooms[roomCode].users.find(user => user.uid === userId);
+  if (!user) {
+    console.log('user not found');
+    return;
+  }
   user.readyStatus = !user.readyStatus;
   console.log('update ready for userID: ', userId)
   ioInstance.to(roomCode).emit('update-room', userMap(roomCode));

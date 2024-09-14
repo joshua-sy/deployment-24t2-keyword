@@ -11,8 +11,9 @@ import StartButton from '@/components/keyword/startButton/startButton';
 import PlayerBoard from '@/components/keyword/playerBoard/playerBoard';
 import { useRouter } from "next/navigation";
 import { useRef } from 'react';
+import LeaveRoomIcon from '@/components/keyword/leaveRoomIcon/LeaveRoomIcon';
 
-const socket = io('http://localhost:4000');
+const socket = io('https://backend-thrumming-brook-424.fly.dev/');
 
 const GameRoom = ({
   searchParams
@@ -33,6 +34,10 @@ const GameRoom = ({
   const [selectedCyborg, setSelectedCyborg] = useState<string>('1');
   const [selectedTime, setSelectedTime] = useState<string>('4 min');
   const isNavigatingRef = useRef(false);
+
+  // for leave room to change color icon 
+  // const [isHoveredLeave, setIsHoveredLeave] = useState(false);
+
 
   const selectedValuesRef = useRef({ selectedCategory, selectedCyborg, selectedTime });
 
@@ -58,37 +63,29 @@ const GameRoom = ({
 
   const handleCategorySelect = (value: string) => {
     setSelectedCategory(value);
-    console.log('Selected category:', value);
   };
 
   const handleCyborgSelect = (value: string) => {
     setSelectedCyborg(value);
-    console.log('Selected cyborg:', value);
   };
 
   const handleTimeSelect = (value: string) => {
     setSelectedTime(value);
-    console.log('CURR VALUES', {
-      roomCode,
-      selectedCategory,
-      selectedCyborg,
-      selectedTime
-    });
-    console.log('Selected time:', value);
+    socket.emit('update-time', roomCode, value);
   };
-  
+
   // Listen for updates to the room's user list
   const handleUpdateRoom = (usersInRoom: any) => {
     setUsers(usersInRoom);
   };
 
-  const handleGameStart = () => {
+  const handleGameStart = (category, cyborg, time) => {
     console.log('Navigating with:', {
       roomCode,
       ...selectedValuesRef.current
     });
     isNavigatingRef.current = true;
-    router.push(`/keyword/round?roomCode=${roomCode}&category=${selectedValuesRef.current.selectedCategory}&cyborg=${selectedValuesRef.current.selectedCyborg}&time=${selectedValuesRef.current.selectedTime}`);
+    router.push(`/keyword/round?roomCode=${roomCode}&category=${category}&cyborg=${cyborg}&time=${time}`);
     // router.push(`/keyword/round?roomCode=${roomCode}`);
   }
 
@@ -161,7 +158,9 @@ const GameRoom = ({
 
       socket.on('update-room', handleUpdateRoom);
 
-      socket.on('game-start', handleGameStart)
+      socket.on('game-start', (category, cyborg, time) => {
+        handleGameStart(category, cyborg, time);
+      });
 
       return () => {
         if (!isNavigatingRef.current) {
@@ -178,10 +177,9 @@ const GameRoom = ({
   }, [roomCode, username, userId]);
 
   const signalAllReady = () => {
-    // router.push(`/keyword/round?roomCode=${roomCode}`);
     if (allReady) {
       isNavigatingRef.current = true;
-      socket.emit('all-ready', roomCode, userId);
+      socket.emit('all-ready', roomCode, selectedCategory, selectedCyborg, selectedTime);
     }
   }
 
@@ -193,16 +191,27 @@ const GameRoom = ({
     });
   };
 
+  const leaveRoom = () => {
+    socket.emit('leave-room', roomCode, userId);
+    //  removes all local storage items
+    localStorage.clear();
+    router.push('/keyword');
+
+  }
+
   return (
     <>
-      <div className="\backgroundDiv bg-robot bg-cover h-screen bg-center-left-px">
-        <div className="contentContainer text-center w-[500px] mx-auto backdrop-blur-sm">
-          <h1 className='text-white'>Welcome to the Game Room</h1>
-          <p className='text-white'>CODE: {roomCode}</p>
-          <RedButton
-            label='COPY CODE'
-            onClick={handleCopy}
-          />
+      <div className="backgroundDiv bg-robot bg-cover bg-fixed h-screen bg-center-left-px">
+        <div className="gameroomContentContainer text-center w-full max-w-md max-h-screen overflow-auto mx-auto backdrop-blur-sm space-y-6 lg:space-y-16 2xl:space-y-0">
+          <LeaveRoomIcon handleClick={leaveRoom} />
+          <div className='flex justify-center items-center text-white text-center font-bold'>
+            <div className="roomcodeContainer mt-4 mb-4 p-4 border-[3px] border-black rounded-lg bg-[#289773] bg-opacity-70 w-[280px]">
+              <div className="flex justify-center items-center space-x-2">
+                <h2 className="text-2xl">CODE: {roomCode}</h2>
+                <img src="/icons/copyIcon.svg" alt="Copy Icon" className="w-10 h-10 cursor-pointer hover:opacity-60 transition-opacity duration-300" onClick={handleCopy} />
+              </div>
+            </div>
+          </div>
           {isHost && <CategoryDropDown onSelect={handleCategorySelect} />}
           {isHost && <CyborgDropDown onSelect={handleCyborgSelect} />}
           {isHost && <TimeDropDown onSelect={handleTimeSelect} />}
