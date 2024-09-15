@@ -107,10 +107,10 @@ export default function Home() {
           {!showRules && (
             <div className='space-y-20 md:space-y-12 lg:space-y-35 2xl:space-y-4'>
               <div className="titleContainer py-10 space-y-4 md:space-y-6 2xl:space-y-2">
-                <h1 className="welcomeText text-white text-6xl md:text-8xl lg:text-9xl 2xl:text-7xl"> WELCOME </h1>
-                <h1 className="toText text-white text-6xl md:text-8xl lg:text-9xl 2xl:text-7xl"> TO </h1>
+                <h1 className="welcomeText text-white text-6xl md:text-8xl lg:text-6xl 2xl:text-6xl"> WELCOME </h1>
+                <h1 className="toText text-white text-6xl md:text-8xl lg:text-6xl 2xl:text-6xl"> TO </h1>
                 <div className="keywordDiv border-4 border-white rounded-3xl p-8 inline-block">
-                  <h1 className="keyWordText text-white text-6xl md:text-8xl lg:text-9xl 2xl:text-7xl"> KEYWORD </h1>
+                  <h1 className="keyWordText text-white text-6xl md:text-8xl lg:text-6xl 2xl:text-6xl"> KEYWORD </h1>
                 </div>
               </div>
               <div>
