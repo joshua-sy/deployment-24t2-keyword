@@ -42,7 +42,7 @@ export default function CyborgDropDown({ onSelect }: { onSelect: (category: stri
           sx={{
             display: 'flex',
             alignItems: 'center',
-            width: '200px',
+            width: '250px',
             margin: '0 auto',  
             backgroundColor:'#e53e3e',
             borderRadius: '2rem',
