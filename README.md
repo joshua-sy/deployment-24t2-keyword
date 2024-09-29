@@ -10,7 +10,7 @@ guessing what the word given is, so be specific but not too specific as to not l
 not too generic as to not get chosen as the cyborg! Have fun!
 
 ## DEPLOYED LINK HERE!!
-https://trainee-warden-24t2-keyword.vercel.app/keyword
+https://warden-games.vercel.app/keyword
 
 ## How to run frontend
 
@@ -62,3 +62,6 @@ node server.js
 
 ## CONTACT US
 KJ (Backend Developer) - lowkhyejac@gmail.com
+Joshua Sy (Team Lead & Developer) - joshsy18@gmail.com
+David (Frontend Developer)
+Patrick (Frontend Developer)
