@@ -62,3 +62,4 @@ node server.js
 
 ## CONTACT US
 KJ (Backend Developer) - lowkhyejac@gmail.com
+Patrick Sun - patricksun70@gmail.com
