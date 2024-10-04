@@ -53,7 +53,7 @@ export default function FormModal({ onSubmit }: FormModalProps) {
           style: {backgroundColor : "white", color: "black", borderRadius: "10px"}
         }}
       >
-        <DialogContent style = {{position: "relative", top: "18px"}}>
+        <DialogContent style = {{position: "relative", top: "18px",}}>
           <DialogContentText style = {{textAlign: 'center'}}>
             Enter Room Code
           </DialogContentText>

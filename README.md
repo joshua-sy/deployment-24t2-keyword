@@ -62,6 +62,6 @@ node server.js
 
 ## CONTACT US
 KJ (Backend Developer) - lowkhyejac@gmail.com
+Patrick Sun (Frontend Developer) - patricksun70@gmail.com
 Joshua Sy (Team Lead & Developer) - joshsy18@gmail.com
 David (Frontend Developer) - tkrd1205@gmail.com
-Patrick (Frontend Developer)
