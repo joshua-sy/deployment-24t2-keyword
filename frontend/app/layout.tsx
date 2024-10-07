@@ -22,13 +22,16 @@ export default function RootLayout({
         <Script id ="google-analytics">
           {
             `
-                        window.dataLayer = window.dataLayer || [];
+                window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
 
               gtag('config', 'G-BD0MGS908Q');
             `
           }
+        </Script>
+        <Script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5167461828752806"
+        crossOrigin="anonymous">
         </Script>
       </head>
       <body className={inter.className}>{children}</body>
